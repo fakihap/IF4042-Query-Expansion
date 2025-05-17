@@ -1,13 +1,20 @@
-from userInp import UserInp as inp
-
+# from userInp import UserInp as inp
+from userInp import UserInp 
 class Terms:
     def __init__(self):
-        self.rawText = inp.getQuery()
-        self.tokenQuery = self.tokenize()
+        self.rawText = None
+        self.tokenQuery = []
         self.weights = {}
 
+    def setRawText(self) :
+        self.rawText = UserInp().getQuery()
+    
+    def getRawText(self) :
+        return self.rawText
+    
     def tokenize(self):
-        return self.rawText.lower().split()
+        return self.getRawText().lower().split()
+    
 
     def setWeights(self, term, weight):
         self.weights[term] = weight
@@ -17,3 +24,14 @@ class Terms:
     
     def getWeights(self) :
         return self.weights
+
+# if __name__ == "__main__" :
+#     inpUser = UserInp()
+#     term = Terms()
+#     txt = inpUser.setQuery()
+#     print(inpUser.getQuery())
+#     term.setRawText()
+#     print(term.getRawText())
+#     print(term.tokenize())
+
+

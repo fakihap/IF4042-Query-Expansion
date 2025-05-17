@@ -2,23 +2,23 @@ import userInp as user
 
 class Preprocessor :
     
-    def removeStopword(query) :
+    def removeStopword(query : str) -> str :
         #query from user.getQuery (string)
         pass
-    def tokenize(query):
+    def tokenize(query : str) -> list[str]:
         #query from user.getQuery (string)
         pass
 
-    def stemWord(tokenQuery):
+    def stemWord(tokenQuery : list[str]) -> list[str]:
         #apply to output of tokenize()
         pass
 
-    def preprocess (tokenQuery) : 
+    def preprocess (tokenQuery:list[str]) -> list[str]  : 
         #apply to output of tokenize()
         pass
 
-    def vectorize(tokenQuery, termsWeight) : 
-        #dfdocs berisi list term dan weightnya, output : list of float hasil vektorisasi pada query yang sudah berbentuk token of words
+    def vectorize(tokenQuery :list[str], termsWeight : list[float]) -> list[float]: 
+        #output : list of float hasil vektorisasi pada query yang sudah berbentuk token of words
         pass
     
     

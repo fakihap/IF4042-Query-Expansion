@@ -5,14 +5,17 @@ class TfType (Enum) :
     ntr = 2
     aug = 3
     bol = 4
+    none = 5
 
 class DfType (Enum) : 
     no = 1
     tid = 2
+    none = 3
 
 class NormType ( Enum) : 
     non = 1
     cos = 2
+    none = 3
 
 class WeightScheme : 
     def __init__(self, tf, df, norm):
