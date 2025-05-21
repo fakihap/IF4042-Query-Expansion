@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build: ./frontend
+    image: if4042-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+  backend:
+    build: ./backend
+    image: if4042-backend:latest
+    ports:
+      - "8000:8000"
