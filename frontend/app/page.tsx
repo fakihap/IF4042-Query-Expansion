@@ -1,5 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
+import { getDocuments } from "./actions";
+
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
@@ -7,6 +11,18 @@ import QuerySettings from "./components/query-settings";
 import QueryHistory from "./components/query-history";
 
 export default function Home() {
+
+  const [documents, setDocuments] = useState()
+
+  useEffect(() => {
+    const fetchData = async() => {
+      const docs = await getDocuments()
+      setDocuments(docs.message)
+    }
+
+    fetchData()
+  }, [])
+  
 
   return (
     <div className="grid grid-cols-[20rem_1fr] h-screen">
@@ -30,6 +46,8 @@ export default function Home() {
             <Card className="bg-card w-full h-[4rem]">ad</Card>
             {/* query */}
             <Card className="bg-card w-full h-[4rem]">ad</Card>
+
+            <span>{documents ?? "no document loaded"}</span>
           </section>
          
 

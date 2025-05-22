@@ -8,6 +8,25 @@ services:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
   backend:
     build: ./backend
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn api.main:app --host 0.0.0.0 --port 8000"
     image: if4042-backend:latest
+    env_file:
+      - ./backend/.env
     ports:
       - "8000:8000"
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: if4042
+      POSTGRES_DB: query_expansion
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
