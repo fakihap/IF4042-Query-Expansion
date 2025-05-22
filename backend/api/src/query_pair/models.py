@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Boolean, DateTime, ForeignKey, PrimaryKeyConstraint, Enum
+from sqlalchemy import Column, Integer, Boolean, DateTime, ForeignKey, PrimaryKeyConstraint, Enum, text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -25,8 +25,8 @@ class QueryPair(Base):
     expanded_query_id = Column(Integer, ForeignKey("queries.id"))
     terms_expanded = Column(Integer)
 
-    used_stemming = Column(Boolean)
-    removed_stopword = Column(Boolean)
+    used_stemming = Column(Boolean, server_default=text("false"), nullable=False)
+    removed_stopword = Column(Boolean, server_default=text("false"), nullable=False)
     scheme_used = Column(Enum(QueryScheme), nullable=False)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())

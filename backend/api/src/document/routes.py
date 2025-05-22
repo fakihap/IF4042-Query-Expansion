@@ -16,12 +16,11 @@ def get_document_service(session: AsyncSession = Depends(get_session)) -> Docume
 @router.get("/", response_model=list[DocumentResponse])
 async def get_all_documents(
     service: DocumentService = Depends(get_document_service),
-) -> list[DocumentService]:
+) -> list[DocumentResponse]:
     
     try:
         documents = await service.get_all_documents()
 
-        print(documents, "pit[itas]")
         return documents
     except Exception as e:
         print(e)
