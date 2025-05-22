@@ -20,6 +20,9 @@ async def get_all_documents(
     
     try:
         documents = await service.get_all_documents()
+
+        print(documents, "pit[itas]")
         return documents
     except Exception as e:
+        print(e)
         raise

@@ -9,4 +9,6 @@ class DocumentService:
 
     async def get_all_documents(self) -> list[DocumentResponse]:
         documents = await self.repository.get_all()
+
+        print(documents, "testservc")
         return [DocumentResponse.model_validate(document) for document in documents]
