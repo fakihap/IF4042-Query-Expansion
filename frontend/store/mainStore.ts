@@ -24,16 +24,20 @@ interface MainState {
   currentQueryPair: QueryPair | null
   queryPairsHistory: QueryPair[]
   currentViewableQuery: Query | null
+  openSidebar: boolean
   setCurrentQueryPair: (queryPair: QueryPair) => void
   setQueryPairsHistory: (queryPairs: QueryPair[]) => void
   setCurrentViewableQuery: (query: Query) => void
+  setOpenSidebar: (status: boolean) => void
 }
 
 export const useMainStore = create<MainState>((set) => ({
   currentQueryPair: null,
   queryPairsHistory: [],
   currentViewableQuery: null,
+  openSidebar: true,
   setCurrentQueryPair: (queryPair) => set({currentQueryPair: queryPair}),
   setQueryPairsHistory: (queryPairs) => set({queryPairsHistory: queryPairs}),
   setCurrentViewableQuery: (query) => set({currentViewableQuery: query}),
+  setOpenSidebar: (status) => set({openSidebar: status})
 }))
