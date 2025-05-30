@@ -15,6 +15,8 @@ import QuerySettings from "./components/query-settings";
 import QueryHistory from "./components/query-history";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 import { SearchCheck, AlignLeft } from "lucide-react";
 
@@ -77,18 +79,39 @@ export default function Home() {
       {/* main - container */}
       <main className={`h-full bg-sidebar col-start-2 grid ${openSidebar ? "grid-rows-[4rem_1fr]" :"grid-rows-[0rem_1fr]"} duration-300`}>
         {/* main - content */}
-        <section className="h-full w-full row-start-2 bg-background rounded-xl grid grid-cols-[20rem_1fr_20rem] px-8 py-8">
+        <section className={`h-full w-full row-start-2 bg-background rounded-xl grid ${openSidebar ? "grid-cols-[10rem_1fr_10rem]" : "grid-cols-[20rem_1fr_20rem]"} px-8 py-8 duration-300`}>
           {/* <div className="flex px-4 py-2 text-xl font-bold"><SearchCheck  />GAN</div> */}
           <AlignLeft size={32} strokeWidth={2} className="cursor-pointer" onClick={() => setOpenSidebar(!openSidebar)}/>
           {/* Main Section */}
-          <ScrollArea className="flex items-center justify-center flex-col w-full mt-8 gap-4">
-          { 
-            currentViewableQuery ? 
-            <Card className="bg-card w-full h-[4rem] ">{currentViewableQuery.content}</Card>
-            :
-            <Card className="bg-card w-full h-[4rem] ">non selected - {currentQueryPair && currentQueryPair.query_id}</Card>
-          }
-          </ScrollArea>
+          <section className="flex items-center justify-center flex-col w-full mt-8 gap-4">
+            <section className="w-full flex gap-8 py-2">
+              <Input className="rounded-sm" placeholder="Search Document" />
+              <span className="flex">
+                <Button variant={"secondary"} size={"sm"} className="px-8 py-2 hover:cursor-pointer">
+                  Search
+                </Button> 
+                <Button variant={"outline"} className="px-8 py-2 hover:cursor-pointer">
+                  From File
+                </Button> 
+              </span>
+            </section>
+
+            <section className="flex flex-col w-full h-full gap-4">
+              <h2 className="text-2xl font-bold pb-2 mt-4">Search Results</h2>
+              <div className="text-gray-400">showing results x from y documents</div>
+              <ScrollArea className="w-full h-full">
+              { 
+                currentViewableQuery ? 
+                <Card className="bg-card w-full h-[4rem] ">{currentViewableQuery.content}</Card>
+                :
+                <Card className="bg-card w-full h-[4rem] ">non selected - {currentQueryPair && currentQueryPair.query_id}</Card>
+              }
+              </ScrollArea>
+            </section>
+
+            
+          
+          </section>
          
 
         </section>
