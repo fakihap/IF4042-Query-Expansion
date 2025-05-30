@@ -18,7 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import { SearchCheck, AlignLeft } from "lucide-react";
+import { Search, SearchCheck, PanelLeft } from "lucide-react";
 
 
 export default function Home() {
@@ -79,18 +79,19 @@ export default function Home() {
       {/* main - container */}
       <main className={`h-full bg-sidebar col-start-2 grid ${openSidebar ? "grid-rows-[4rem_1fr]" :"grid-rows-[0rem_1fr]"} duration-300`}>
         {/* main - content */}
-        <section className={`h-full w-full row-start-2 bg-background rounded-xl grid ${openSidebar ? "grid-cols-[10rem_1fr_10rem]" : "grid-cols-[20rem_1fr_20rem]"} px-8 py-8 duration-300`}>
+        <section className={`h-full w-full row-start-2 bg-background  grid ${openSidebar ? "grid-cols-[10rem_1fr_10rem] rounded-xl" : "grid-cols-[20rem_1fr_20rem] rounded-none"} px-8 py-8 duration-300`}>
           {/* <div className="flex px-4 py-2 text-xl font-bold"><SearchCheck  />GAN</div> */}
-          <AlignLeft size={32} strokeWidth={2} className="cursor-pointer" onClick={() => setOpenSidebar(!openSidebar)}/>
+          <PanelLeft size={36} strokeWidth={2} className="cursor-pointer hover:bg-gray-600 rounded-xs p-1" onClick={() => setOpenSidebar(!openSidebar)}/>
           {/* Main Section */}
           <section className="flex items-center justify-center flex-col w-full mt-8 gap-4">
-            <section className="w-full flex gap-8 py-2">
-              <Input className="rounded-sm" placeholder="Search Document" />
+            <section className="w-full flex gap-6 py-2">
+              <Input className="rounded-xs" placeholder="Search Document" />
               <span className="flex">
-                <Button variant={"secondary"} size={"sm"} className="px-8 py-2 hover:cursor-pointer">
+                <Button variant={"secondary"} size={"sm"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
+                  <Search />
                   Search
                 </Button> 
-                <Button variant={"outline"} className="px-8 py-2 hover:cursor-pointer">
+                <Button variant={"outline"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
                   From File
                 </Button> 
               </span>

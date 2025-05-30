@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-import { Check, ChevronsUpDown } from "lucide-react"
+import { BrushCleaning, FlaskConical, SquareSlash, ScissorsLineDashed, Check, ChevronsUpDown } from "lucide-react"
  
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -41,7 +41,7 @@ function WeightSchemeCombobox() {
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="w-[200px] justify-between cursor-pointer"
+                className="w-[200px] justify-between cursor-pointer ml-6"
                 >
                 {weightingScheme
                     ? Object.values(WeightingSchemes).find((scheme) => scheme === weightingScheme)
@@ -92,15 +92,24 @@ export default function QuerySettings() {
         <section className="flex flex-col gap-4 justify-center">
             <h2 className="text-2xl font-bold pb-4">Query Settings</h2>
             <div className="flex items-center justify-between w-full">
-                <Label className="font-semibold" htmlFor="use-stemming">Stemming</Label>
+                <Label className="font-medium" htmlFor="use-stemming">
+                    <ScissorsLineDashed />
+                    Stemming
+                </Label>
                 <Switch className="cursor-pointer" id="use-stemming" checked={useStemming} onCheckedChange={(e) => setUseStemming(e)} />
             </div>
             <div className="flex items-center justify-between w-full">
-                <Label className="font-semibold" htmlFor="use-stopwordelim">Stop-Word Elimination</Label>
+                <Label className="font-medium" htmlFor="use-stopwordelim">
+                    <SquareSlash />
+                    Stop-Word Elimination
+                </Label>
                 <Switch className="cursor-pointer" id="use-stopwordelim" checked={useStopWordElim} onCheckedChange={(e) => setStopWordElim(e)}/>
             </div>
             <div className="flex flex-col gap-4">
-                <Label className="font-semibold">Weighting Scheme</Label>
+                <Label className="font-medium">
+                    <FlaskConical />
+                    Weighting Scheme
+                </Label>
                 <WeightSchemeCombobox />
             </div>
             

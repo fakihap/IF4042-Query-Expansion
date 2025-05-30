@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 export default function QueryHistory() {
     const {
         queryPairsHistory,
+        currentViewableQuery,
         setCurrentQueryPair,
     } = useMainStore()
 
@@ -23,7 +24,7 @@ export default function QueryHistory() {
                     {queryPairsHistory.map((item, idx) => 
                     <Fragment key={idx}>
                         <div 
-                            className="cursor-pointer hover:bg-gray-600 rounded-sm px-4 py-1"
+                            className={`cursor-pointer hover:bg-gray-600 rounded-sm px-4 py-1 ${currentViewableQuery?.id == item.query_id ? "bg-gray-700" : ""}`}
                             onClick={() => setCurrentQueryPair(item)}>
                             Query {item.query_id} - {item.scheme_used} 
                         </div>
