@@ -41,7 +41,7 @@ function WeightSchemeCombobox() {
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="w-[200px] justify-between"
+                className="w-[200px] justify-between cursor-pointer"
                 >
                 {weightingScheme
                     ? Object.values(WeightingSchemes).find((scheme) => scheme === weightingScheme)
@@ -89,18 +89,18 @@ export default function QuerySettings() {
     } = useQuerySettingsStore()
 
     return (
-        <section className="flex flex-col gap-2 justify-center">
+        <section className="flex flex-col gap-4 justify-center">
             <h2 className="text-2xl font-bold pb-4">Query Settings</h2>
-            <div className="flex gap-4">
-                <Label className="text-md" htmlFor="use-stemming">Stemming</Label>
-                <Switch id="use-stemming" checked={useStemming} onCheckedChange={(e) => setUseStemming(e)} />
+            <div className="flex items-center justify-between w-full">
+                <Label className="font-semibold" htmlFor="use-stemming">Stemming</Label>
+                <Switch className="cursor-pointer" id="use-stemming" checked={useStemming} onCheckedChange={(e) => setUseStemming(e)} />
             </div>
-            <div className="flex gap-4">
-                <Label className="text-md" htmlFor="use-stopwordelim">Stop-Word Elimination</Label>
-                <Switch id="use-stopwordelim" checked={useStopWordElim} onCheckedChange={(e) => setStopWordElim(e)}/>
+            <div className="flex items-center justify-between w-full">
+                <Label className="font-semibold" htmlFor="use-stopwordelim">Stop-Word Elimination</Label>
+                <Switch className="cursor-pointer" id="use-stopwordelim" checked={useStopWordElim} onCheckedChange={(e) => setStopWordElim(e)}/>
             </div>
-            <div className="flex flex-col gap-1">
-                <Label className="text-md">Weighting Scheme</Label>
+            <div className="flex flex-col gap-4">
+                <Label className="font-semibold">Weighting Scheme</Label>
                 <WeightSchemeCombobox />
             </div>
             
