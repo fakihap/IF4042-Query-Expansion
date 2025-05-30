@@ -1,13 +1,15 @@
 services:
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
     image: if4042-frontend:latest
     ports:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
     command: >
       sh -c "alembic upgrade head &&
              uvicorn api.main:app --host 0.0.0.0 --port 8000"
