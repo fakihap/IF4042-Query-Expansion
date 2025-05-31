@@ -1,19 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import { getDocuments, getQueryPairs, getQuery } from "./actions";
-
 import { useMainStore } from "@/store/mainStore";
 import type { Query } from "@/store/mainStore";
-
-
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
+import InvertedViewer from "./components/inverted-viewer";
 import QuerySettings from "./components/query-settings";
 import QueryHistory from "./components/query-history";
-
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,13 +30,13 @@ export default function Home() {
 
   // history
   useEffect(() => {
-    const fetchHistory = async() => {
-      const queryPairs = await getQueryPairs()
+    // const fetchHistory = async() => {
+    //   const queryPairs = await getQueryPairs()
 
-      setQueryPairsHistory(queryPairs)
-    }
+    //   setQueryPairsHistory(queryPairs)
+    // }
 
-    fetchHistory()
+    // fetchHistory()
   }, [])
 
   // query selectable
@@ -49,22 +44,20 @@ export default function Home() {
     if (!currentQueryPair)
       return
 
-    const fetchQueryPair = async() => {
-      const queryPair: Query = await getQuery(currentQueryPair?.query_id)
+    // const fetchQueryPair = async() => {
+    //   const queryPair: Query = await getQuery(currentQueryPair?.query_id)
 
-      setCurrentViewableQuery({
-        id: queryPair.id,
-        content: queryPair.content,
-        search_result: queryPair.search_result,
-        is_expansion: queryPair.is_expansion,
-      })
-    }
+    //   setCurrentViewableQuery({
+    //     id: queryPair.id,
+    //     content: queryPair.content,
+    //     search_result: queryPair.search_result,
+    //     is_expansion: queryPair.is_expansion,
+    //   })
+    // }
   
-    fetchQueryPair()
+    // fetchQueryPair()
   }, [currentQueryPair]) // add one more on button press
   
-  
-
   return (
     <div className={`grid ${openSidebar ? "grid-cols-[20rem_1fr]" : "grid-cols-[0_1fr]"} h-screen duration-300`}>
       {/* sidebar */}
@@ -72,12 +65,12 @@ export default function Home() {
         <section className={`flex flex-col gap-8 ${openSidebar ? "" : "hidden"}`}>
           <QuerySettings />
           <Separator />
-          <QueryHistory />
+          {/* <InvertedViewer /> */}
         </section>
       </aside>
 
       {/* main - container */}
-      <main className={`h-full bg-sidebar col-start-2 grid ${openSidebar ? "grid-rows-[4rem_1fr]" :"grid-rows-[0rem_1fr]"} duration-300`}>
+      <main className={`h-full bg-sidebar col-start-2 grid ${openSidebar ? "grid-rows-[0rem_1fr]" :"grid-rows-[0rem_1fr]"} duration-300`}>
         {/* main - content */}
         <section className={`h-full w-full row-start-2 bg-background  grid ${openSidebar ? "grid-cols-[10rem_1fr_10rem] rounded-xl" : "grid-cols-[20rem_1fr_20rem] rounded-none"} px-8 py-8 duration-300`}>
           {/* <div className="flex px-4 py-2 text-xl font-bold"><SearchCheck  />GAN</div> */}
@@ -87,7 +80,7 @@ export default function Home() {
             <section className="w-full flex gap-6 py-2">
               <Input className="rounded-xs" placeholder="Search Document" />
               <span className="flex">
-                <Button variant={"secondary"} size={"sm"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
+                <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
                   <Search />
                   Search
                 </Button> 
@@ -98,8 +91,21 @@ export default function Home() {
             </section>
 
             <section className="flex flex-col w-full h-full gap-4">
-              <h2 className="text-2xl font-bold pb-2 mt-4">Search Results</h2>
-              <div className="text-gray-400">showing results x from y documents</div>
+              <span className="flex justify-between">
+                <span className="flex flex-col">
+                  <h2 className="text-2xl font-bold pb-2 mt-4">Search Results</h2>
+                  <div className="text-gray-400">Showing results x from y documents</div>
+                </span>
+                <span className="flex flex-col">
+                  <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
+                    Download Results
+                  </Button> 
+                  <Button variant="outline" className="px-8 py-2 rounded-xs" disabled>
+                    MAP: 99.99%
+                  </Button>
+                </span>
+              </span>
+              
               <ScrollArea className="w-full h-full">
               { 
                 currentViewableQuery ? 
@@ -109,12 +115,7 @@ export default function Home() {
               }
               </ScrollArea>
             </section>
-
-            
-          
           </section>
-         
-
         </section>
       </main>
     </div>

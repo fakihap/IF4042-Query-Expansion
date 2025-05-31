@@ -2,16 +2,13 @@
 
 import { WeightingSchemes, useQuerySettingsStore } from "@/store/querySettingsStore";
 import type { WeightingScheme } from "@/store/querySettingsStore";
-
 import { useState } from "react";
-
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-
-import { BrushCleaning, FlaskConical, SquareSlash, ScissorsLineDashed, Check, ChevronsUpDown } from "lucide-react"
- 
+import { FlaskConical, SquareSlash, ScissorsLineDashed, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input";
 import {
   Command,
   CommandEmpty,
@@ -25,8 +22,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
  
-
-
 function WeightSchemeCombobox() {
     const [open, setOpen] = useState(false)
     const {
@@ -84,13 +79,21 @@ export default function QuerySettings() {
     const {
         useStemming,
         useStopWordElim,
+        useIDF, 
+        useNormalization,
+        numberExpansionWords,
         setUseStemming,
         setStopWordElim,
+        setUseIDF,
+        setUseNormalization,
+        setNumberExpansionWords
     } = useQuerySettingsStore()
 
     return (
         <section className="flex flex-col gap-4 justify-center">
-            <h2 className="text-2xl font-bold pb-4">Query Settings</h2>
+            <h2 className="text-2xl font-bold pb-4">Search Settings</h2>
+
+            <h4 className="text-l font-bold">Vocabulary</h4>
             <div className="flex items-center justify-between w-full">
                 <Label className="font-medium" htmlFor="use-stemming">
                     <ScissorsLineDashed />
@@ -105,14 +108,46 @@ export default function QuerySettings() {
                 </Label>
                 <Switch className="cursor-pointer" id="use-stopwordelim" checked={useStopWordElim} onCheckedChange={(e) => setStopWordElim(e)}/>
             </div>
+
+            <h4 className="text-l font-bold">Term Weighting</h4>
             <div className="flex flex-col gap-4">
                 <Label className="font-medium">
                     <FlaskConical />
-                    Weighting Scheme
+                    Term 
                 </Label>
                 <WeightSchemeCombobox />
             </div>
+            <div className="flex items-center justify-between w-full">
+                <Label className="font-medium" htmlFor="use-stopwordelim">
+                    <SquareSlash />
+                    Inverse Document 
+                </Label>
+                <Switch className="cursor-pointer" id="use-stopwordelim" checked={useIDF} onCheckedChange={(e) => setUseIDF(e)}/>
+            </div>
+
+            <h4 className="text-l font-bold">Similarity Calculation</h4>
+            <div className="flex items-center justify-between w-full">
+                <Label className="font-medium" htmlFor="use-stopwordelim">
+                    <SquareSlash />
+                    Normalization
+                </Label>
+                <Switch className="cursor-pointer" id="use-stopwordelim" checked={useNormalization} onCheckedChange={(e) => setUseNormalization(e)}/>
+            </div>
             
+            <h4 className="text-l font-bold">Word Expansion</h4>
+            <div className="flex items-center justify-between ">
+                <Label className="font-medium" htmlFor="use-stopwordelim">
+                    <SquareSlash />
+                    Number Words
+                </Label>
+                <div className="flex items-center justify-between w-1/2">
+                    <Switch className="cursor-pointer" id="use-stopwordelim" checked={numberExpansionWords == -1} onCheckedChange={(e) => numberExpansionWords == -1 ? setNumberExpansionWords(4) : setNumberExpansionWords(-1)}/>
+                    <Label className="font-medium" htmlFor="use-stopwordelim">
+                        All
+                    </Label>
+                    <Input type="number" className="w-1/2 text-center" value={numberExpansionWords == -1 ? "" : numberExpansionWords} onChange={(e) => setNumberExpansionWords(parseInt(e.target.value))} disabled={numberExpansionWords === -1}/>
+                </div>
+            </div>
         </section>
     )
 }
