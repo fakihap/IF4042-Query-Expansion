@@ -9,6 +9,15 @@ export async function getDocuments() {
     return await res.json();
 }
 
+export async function search() {
+    const res = await fetch("http://localhost:8000/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+    });
+
+    return await res.json();
+}
+
 export async function getQueryPairs() {
     const res = await fetch("http://localhost:8000/pairs", {
         method: "GET",

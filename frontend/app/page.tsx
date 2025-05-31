@@ -62,7 +62,7 @@ export default function Home() {
   return (
     <div className={`grid ${openSidebar ? "grid-cols-[20rem_1fr]" : "grid-cols-[0_1fr]"} h-screen duration-300`}>
       {/* sidebar */}
-      <aside className="opacity-100 w-full h-screen bg-sidebar px-8 py-12">
+      <aside className={`${openSidebar ? "fixed top-0 left-0 h-full bg-sidebar px-8 py-12 transition-all duration-300 z-20 w-80 opacity-100" : "opacity-100 w-0 h-screen bg-sidebar px-8 py-12"}`}>
         <section className={`flex flex-col gap-8 ${openSidebar ? "" : "hidden"}`}>
           <SearchSettings />
           <Separator />
@@ -74,7 +74,7 @@ export default function Home() {
       <main className={`h-full bg-sidebar col-start-2 grid ${openSidebar ? "grid-rows-[0rem_1fr]" :"grid-rows-[0rem_1fr]"} duration-300`}>
         {/* main - content */}
         <Tabs defaultValue="search" asChild>
-          <section className={`h-full w-full row-start-2 bg-background  grid ${openSidebar ? "grid-cols-[18rem_1fr_16rem] rounded-xl" : "grid-cols-[20rem_1fr_20rem] rounded-none"} px-8 py-8 duration-300`}>
+          <section className={`h-full w-full row-start-2 bg-background  grid ${openSidebar ? "grid-cols-[18rem_1fr_16rem]" : "grid-cols-[20rem_1fr_20rem] rounded-none"} px-8 py-8 duration-300`}>
             {/* <div className="flex px-4 py-2 text-xl font-bold"><SearchCheck  />GAN</div> */}
             <aside className="flex gap-3 h-[36px]">
               <PanelLeft size={36} strokeWidth={2} className="cursor-pointer hover:bg-gray-600 rounded-xs p-1" onClick={() => setOpenSidebar(!openSidebar)}/>
@@ -87,7 +87,7 @@ export default function Home() {
             
             {/* Main Section */}
             <TabsContent value="search">
-              <section className="flex items-center justify-center flex-col w-full mt-8 gap-4">
+              <section className="flex items-center justify-center flex-col w-full mt-8 gap-4 overflow-x-hidden">
                 <section className="w-full flex gap-6 py-2">
                   <Input className="rounded-xs" placeholder="Search Document" />
                   <span className="flex gap-2">

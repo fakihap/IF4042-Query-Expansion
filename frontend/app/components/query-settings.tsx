@@ -30,10 +30,14 @@ export default function QuerySettings() {
                 </a>
             </nav>
             <div className="flex items-center justify-between">
-                <div className="flex items-center bg-white rounded-full px-4 py-2 w-7/10 max-w-4xl overflow-hidden">
-                    <span className="text-black font-medium whitespace-nowrap">Suggested Expansion</span>
+                <div className="flex items-center bg-white rounded-full px-4 py-2 w-7/10 overflow-hidden">
+                    <span className="text-black font-medium whitespace-nowrap">Suggested</span>
                     <div className="ml-4 flex-1 overflow-x-auto whitespace-nowrap scrollbar-hide flex-nowrap">
-                        <div className="inline-flex gap-2 flex-nowrap">
+                        <div className="inline-flex gap-2 flex-nowrap w-1">
+                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
+                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
+                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
+                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
                             <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
                         </div>
                     </div>
