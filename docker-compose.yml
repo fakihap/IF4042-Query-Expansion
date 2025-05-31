@@ -14,6 +14,8 @@ services:
       sh -c "alembic upgrade head &&
              uvicorn api.main:app --host 0.0.0.0 --port 8000"
     image: if4042-backend:latest
+    volumes:
+      - ./dataset:/app/dataset
     env_file:
       - ./backend/.env
     ports:
