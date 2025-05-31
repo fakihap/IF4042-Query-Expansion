@@ -1,6 +1,6 @@
 "use client";
 
-import { WeightingSchemes, useQuerySettingsStore } from "@/store/querySettingsStore";
+import { WeightingSchemes, groupedWeightingSchemes, useQuerySettingsStore } from "@/store/querySettingsStore";
 import type { WeightingScheme } from "@/store/querySettingsStore";
 
 import { useState } from "react";
@@ -49,31 +49,35 @@ function WeightSchemeCombobox() {
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="w-[16rem] p-0">
                 <Command>
-                <CommandList>
-                    <CommandEmpty>No framework found.</CommandEmpty>
-                    <CommandGroup>
-                    {Object.values(WeightingSchemes).map((scheme) => (
-                        <CommandItem
-                        key={scheme}
-                        value={scheme}
-                        onSelect={(newWeightingScheme) => {
-                            setWeightingScheme(newWeightingScheme as WeightingScheme)
-                            setOpen(false)
-                        }}
-                        >
-                        <Check
-                            className={cn(
-                            "mr-2 h-4 w-4",
-                            weightingScheme === scheme ? "opacity-100" : "opacity-0"
-                            )}
-                        />
-                        {scheme}
-                        </CommandItem>
-                    ))}
-                    </CommandGroup>
-                </CommandList>
+                    <CommandList className="max-h-none">
+                        {
+                            Object.values(groupedWeightingSchemes).map(({group, items}) => (
+                                <CommandGroup key={group} heading={group}>
+                                {items.map((item) => (
+                                    <CommandItem
+                                    key={item}
+                                    value={item}
+                                    onSelect={(newWeightingScheme) => {
+                                        setWeightingScheme(newWeightingScheme as WeightingScheme)
+                                        setOpen(false)
+                                    }}
+                                    >
+                                    <Check
+                                        className={cn(
+                                        "mr-2 h-4 w-4",
+                                        weightingScheme === item ? "opacity-100" : "opacity-0"
+                                        )}
+                                    />
+                                    {item}
+                                    </CommandItem>
+                                ))}
+                                </CommandGroup>
+                            ))
+                        }
+                        
+                    </CommandList>
                 </Command>
             </PopoverContent>
             </Popover>
