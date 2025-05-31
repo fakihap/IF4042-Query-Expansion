@@ -7,7 +7,6 @@ export const WeightingSchemes = {
   natural: "Natural",
   no: "No Weighting",
 } as const
-
 export type WeightingScheme = typeof WeightingSchemes[keyof typeof WeightingSchemes]
 
 interface QuerySettingsState {

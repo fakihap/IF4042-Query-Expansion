@@ -6,7 +6,8 @@ import { useMainStore } from "@/store/mainStore";
 import type { Query } from "@/store/mainStore";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import InvertedViewer from "./components/inverted-viewer";
+import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
+
 import QuerySettings from "./components/query-settings";
 import QueryHistory from "./components/query-history";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -72,51 +73,56 @@ export default function Home() {
       {/* main - container */}
       <main className={`h-full bg-sidebar col-start-2 grid ${openSidebar ? "grid-rows-[0rem_1fr]" :"grid-rows-[0rem_1fr]"} duration-300`}>
         {/* main - content */}
-        <section className={`h-full w-full row-start-2 bg-background  grid ${openSidebar ? "grid-cols-[10rem_1fr_10rem] rounded-xl" : "grid-cols-[20rem_1fr_20rem] rounded-none"} px-8 py-8 duration-300`}>
-          {/* <div className="flex px-4 py-2 text-xl font-bold"><SearchCheck  />GAN</div> */}
-          <PanelLeft size={36} strokeWidth={2} className="cursor-pointer hover:bg-gray-600 rounded-xs p-1" onClick={() => setOpenSidebar(!openSidebar)}/>
-          {/* Main Section */}
-          <section className="flex items-center justify-center flex-col w-full mt-8 gap-4">
-            <section className="w-full flex gap-6 py-2">
-              <Input className="rounded-xs" placeholder="Search Document" />
-              <span className="flex">
-                <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
-                  <Search />
-                  Search
-                </Button> 
-                <Button variant={"outline"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
-                  From File
-                </Button> 
-              </span>
-            </section>
+        <Tabs defaultValue="search" asChild>
+          <section className={`h-full w-full row-start-2 bg-background  grid ${openSidebar ? "grid-cols-[18rem_1fr_16rem] rounded-xl" : "grid-cols-[20rem_1fr_20rem] rounded-none"} px-8 py-8 duration-300`}>
+            {/* <div className="flex px-4 py-2 text-xl font-bold"><SearchCheck  />GAN</div> */}
+            <aside className="flex gap-3 h-[36px]">
+              <PanelLeft size={36} strokeWidth={2} className="cursor-pointer hover:bg-gray-600 rounded-xs p-1" onClick={() => setOpenSidebar(!openSidebar)}/>
+              <Separator orientation="vertical" />
+              <TabsList>
+                <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="search">Search</TabsTrigger>
+                <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="browse">Browse</TabsTrigger>
+              </TabsList>
+            </aside>
+            
+            {/* Main Section */}
+            <TabsContent value="search">
+              <section className="flex items-center justify-center flex-col w-full mt-8 gap-4">
+                <section className="w-full flex gap-6 py-2">
+                  <Input className="rounded-xs" placeholder="Search Document" />
+                  <span className="flex gap-2">
+                    <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
+                      <Search />
+                      Search
+                    </Button> 
+                    <Button variant={"outline"}  className="px-4 py-2 hover:cursor-pointer rounded-xs">
+                      From File
+                    </Button> 
+                  </span>
+                </section>
 
-            <section className="flex flex-col w-full h-full gap-4">
-              <span className="flex justify-between">
-                <span className="flex flex-col">
+                <section className="flex flex-col w-full h-full gap-4">
                   <h2 className="text-2xl font-bold pb-2 mt-4">Search Results</h2>
-                  <div className="text-gray-400">Showing results x from y documents</div>
-                </span>
-                <span className="flex flex-col">
-                  <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
-                    Download Results
-                  </Button> 
-                  <Button variant="outline" className="px-8 py-2 rounded-xs" disabled>
-                    MAP: 99.99%
-                  </Button>
-                </span>
-              </span>
+                  <div className="text-gray-400">showing results x from y documents</div>
+                  <ScrollArea className="w-full h-full">
+                  { 
+                    currentViewableQuery ? 
+                    <Card className="bg-card w-full h-[4rem] ">{currentViewableQuery.content}</Card>
+                    :
+                    <Card className="bg-card w-full h-[4rem] ">non selected - {currentQueryPair && currentQueryPair.query_id}</Card>
+                  }
+                  </ScrollArea>
+                </section>
+              </section>
+            </TabsContent>
+
+            <TabsContent value="browse">
+              <h2 className="text-2xl font-bold pb-2 mt-4">Browse Inverted File</h2>
               
-              <ScrollArea className="w-full h-full">
-              { 
-                currentViewableQuery ? 
-                <Card className="bg-card w-full h-[4rem] ">{currentViewableQuery.content}</Card>
-                :
-                <Card className="bg-card w-full h-[4rem] ">non selected - {currentQueryPair && currentQueryPair.query_id}</Card>
-              }
-              </ScrollArea>
-            </section>
+            </TabsContent>
+
           </section>
-        </section>
+        </Tabs>
       </main>
     </div>
   );
