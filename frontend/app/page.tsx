@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getDocuments, getQueryPairs, getQuery, startSearch } from "./actions";
-import { useMainStore } from "@/store/mainStore";
+import { useMainStore, Document } from "@/store/mainStore";
 import { useQuerySettingsStore } from "@/store/querySettingsStore";
 import type { Query } from "@/store/mainStore";
 
@@ -23,12 +23,12 @@ export default function Home() {
   const {
     currentQueryPair,
     queryPairsHistory,
-    currentViewableQuery,
     openSidebar,
+    currentQueryResult,
     setCurrentQueryPair,
     setQueryPairsHistory,
-    setCurrentViewableQuery,
     setOpenSidebar,
+    setCurrentQueryResult,
   } = useMainStore()
 
   const {
@@ -38,6 +38,9 @@ export default function Home() {
     useIDF,
     useNormalization,
   } = useQuerySettingsStore()
+
+  const [searchPrompt, setSearchPrompt] = useState<string>()
+  const [documents, setDocuments] = useState<Document[]>([])
 
   // history
   useEffect(() => {
@@ -68,6 +71,33 @@ export default function Home() {
   
     // fetchQueryPair()
   }, [currentQueryPair]) // add one more on button press
+
+  useEffect(() => {
+    const fetchDocuments = async() => {
+      const docs = await getDocuments()
+      console.log('setting docs', docs)
+      setDocuments(docs)
+    }
+
+    fetchDocuments()
+  }, [])
+
+  const handleStartSearch = async () => {
+    const res = await startSearch({
+      queries: [searchPrompt ?? ''], // TODO: later deal with "from file" inputs
+      useStemming: useStemming,
+      useStopwordElim: useStopWordElim,
+      tfMode: "augmented", // TODO: change to enum
+      useIDF: useIDF, 
+      useNormalize: useNormalization,
+    })
+    // .then(data => console.log('POST ', data, data.result))
+    // .then(data => setCurrentQueryResult(data)) ///////////////////////
+
+    // console.log(res.result)
+    setCurrentQueryResult(res.result)
+
+  }
   
   return (
     <div className={`grid ${openSidebar ? "grid-cols-[20rem_1fr]" : "grid-cols-[0_1fr]"} h-screen duration-300`}>
@@ -99,16 +129,9 @@ export default function Home() {
             <TabsContent value="search">
               <section className="flex items-center justify-center flex-col w-full mt-8 gap-4 overflow-x-hidden">
                 <section className="w-full flex gap-6 py-2">
-                  <Input className="rounded-xs" placeholder="Search Document" />
+                  <Input className="rounded-xs" placeholder="Search Document" onChange={(e) => setSearchPrompt(e.target.value)}/>
                   <span className="flex gap-2">
-                    <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs" onClick={() => console.log(startSearch({
-                      queries: ["test search from button"],
-                      useStemming: useStemming,
-                      useStopwordElim: useStopWordElim,
-                      tfMode: "augmented", // TODO: change to enum
-                      useIDF: useIDF, 
-                      useNormalize: useNormalization,
-                    }))}>
+                    <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs" onClick={handleStartSearch}>
                       <Search />
                       Search
                     </Button> 
@@ -135,7 +158,25 @@ export default function Home() {
                   </div>
 
                   <QuerySettings/>
-                  <DocumentList/>
+
+                  {currentQueryResult.length > 0 &&
+                  <DocumentList data={currentQueryResult[0].map(r => {
+                    const relevantDoc = documents.filter(doc => doc.id == r.document_id)
+
+                    // console.log({
+                    //   title: relevantDoc[0].title,
+                    //   abstract: relevantDoc[0].abstract,
+                    //   ...r
+                    // })
+
+
+                    return {
+                      title: relevantDoc[0].title,
+                      abstract: relevantDoc[0].content,
+                      ...r
+                    }
+                  })} />
+                  }
                 </section>
               </section>
             </TabsContent>

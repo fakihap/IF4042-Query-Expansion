@@ -34,8 +34,7 @@ export async function startSearch({queries, useStemming, useStopwordElim, tfMode
         })
     });
 
-    const result = await res.json().then(data => console.log('POST response:', data, data.result))
-                        .catch(error => console.error('Error:', error));
+    const result = await res.json()
 
     return result
 }

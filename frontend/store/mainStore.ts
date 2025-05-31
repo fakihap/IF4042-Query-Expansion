@@ -20,24 +20,36 @@ export type Query = {
   is_expansion: boolean,
 }
 
+type QueryResult = {
+  document_id: number,
+  similarity: number
+}
+
+export type Document = {
+  id: number,
+  title: string,
+  author: string,
+  content: string,
+}
+
 interface MainState {
   currentQueryPair: QueryPair | null
   queryPairsHistory: QueryPair[]
-  currentViewableQuery: Query | null
   openSidebar: boolean
+  currentQueryResult: QueryResult[][]
   setCurrentQueryPair: (queryPair: QueryPair) => void
   setQueryPairsHistory: (queryPairs: QueryPair[]) => void
-  setCurrentViewableQuery: (query: Query) => void
   setOpenSidebar: (status: boolean) => void
+  setCurrentQueryResult: (queryResults: QueryResult[][]) => void
 }
 
 export const useMainStore = create<MainState>((set) => ({
   currentQueryPair: null,
   queryPairsHistory: [],
-  currentViewableQuery: null,
   openSidebar: true,
+  currentQueryResult: [],
   setCurrentQueryPair: (queryPair) => set({currentQueryPair: queryPair}),
   setQueryPairsHistory: (queryPairs) => set({queryPairsHistory: queryPairs}),
-  setCurrentViewableQuery: (query) => set({currentViewableQuery: query}),
-  setOpenSidebar: (status) => set({openSidebar: status})
+  setOpenSidebar: (status) => set({openSidebar: status}),
+  setCurrentQueryResult: (queryResults) => set({currentQueryResult: queryResults})
 }))

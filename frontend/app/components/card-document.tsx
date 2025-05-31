@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-type CardDocumentProps = {
+export type CardDocumentProps = {
   title: string;
   abstract: string;
   similarity: number;

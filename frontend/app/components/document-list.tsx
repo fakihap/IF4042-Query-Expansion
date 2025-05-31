@@ -11,12 +11,16 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import CardDocument from "./card-document";
-import data from "./cisi.json";
+// import data from "./cisi.json";
+
+import type { CardDocumentProps } from "./card-document";
 
 const ITEMS_PER_PAGE = 5;
 const MAX_PAGE_BUTTONS = 5;
 
-export default function DocumentList() {
+export default function DocumentList({data}: {
+  data: CardDocumentProps[]
+}) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);

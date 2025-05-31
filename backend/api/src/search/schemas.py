@@ -20,7 +20,7 @@ class SearchBase(BaseModel):
     useNormalize: bool
 
 class SearchRank(BaseModel):
-    score: float
+    similarity: float
     document_id: int
 
 class SearchRequest(SearchBase):
