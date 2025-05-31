@@ -7,15 +7,15 @@ import type { Query } from "@/store/mainStore";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
-
 import QuerySettings from "./components/query-settings";
 import QueryHistory from "./components/query-history";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-import { Search, SearchCheck, PanelLeft } from "lucide-react";
-
+import { Search, SearchCheck, PanelLeft, ArrowRight, ArrowLeft } from "lucide-react";
+import SearchSettings from "./components/search-settings";
+import DocumentList from "./components/document-list";
+import InvertedViewer from "./components/inverted-viewer";
 
 export default function Home() {
   const {
@@ -64,7 +64,7 @@ export default function Home() {
       {/* sidebar */}
       <aside className="opacity-100 w-full h-screen bg-sidebar px-8 py-12">
         <section className={`flex flex-col gap-8 ${openSidebar ? "" : "hidden"}`}>
-          <QuerySettings />
+          <SearchSettings />
           <Separator />
           {/* <InvertedViewer /> */}
         </section>
@@ -102,22 +102,29 @@ export default function Home() {
                 </section>
 
                 <section className="flex flex-col w-full h-full gap-4">
-                  <h2 className="text-2xl font-bold pb-2 mt-4">Search Results</h2>
-                  <div className="text-gray-400">showing results x from y documents</div>
-                  <ScrollArea className="w-full h-full">
-                  { 
-                    currentViewableQuery ? 
-                    <Card className="bg-card w-full h-[4rem] ">{currentViewableQuery.content}</Card>
-                    :
-                    <Card className="bg-card w-full h-[4rem] ">non selected - {currentQueryPair && currentQueryPair.query_id}</Card>
-                  }
-                  </ScrollArea>
+                  <div className="flex justify-between">
+                    <div>
+                      <h2 className="text-2xl font-bold mt-4">Search Results</h2>
+                      {/* <div className="text-gray-400">Showing results x from y documents</div> */}
+                    </div>
+                    <div className="flex flex-col">
+                      <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
+                        Download Results
+                      </Button> 
+                      <Button variant={"outline"}  className="px-4 py-2 hover:cursor-pointer rounded-xs" disabled>
+                        MAP: 99.99
+                      </Button> 
+                    </div>
+                  </div>
+
+                  <QuerySettings/>
+                  <DocumentList/>
                 </section>
               </section>
             </TabsContent>
 
             <TabsContent value="browse">
-              <h2 className="text-2xl font-bold pb-2 mt-4">Browse Inverted File</h2>
+              <InvertedViewer/>
               
             </TabsContent>
 

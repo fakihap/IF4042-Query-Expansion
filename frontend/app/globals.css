@@ -68,6 +68,15 @@
   --color-destructive-foreground: var(--destructive-foreground);
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
 :root {
   --radius: 1.3rem;
   --background: oklch(1.00 0 0);

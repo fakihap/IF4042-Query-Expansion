@@ -1,153 +1,47 @@
 "use client";
 
-import { WeightingSchemes, useQuerySettingsStore } from "@/store/querySettingsStore";
-import type { WeightingScheme } from "@/store/querySettingsStore";
-import { useState } from "react";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { FlaskConical, SquareSlash, ScissorsLineDashed, Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
- 
-function WeightSchemeCombobox() {
-    const [open, setOpen] = useState(false)
-    const {
-        weightingScheme,
-        setWeightingScheme,
-    } = useQuerySettingsStore()
-
-    return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                className="w-[200px] justify-between cursor-pointer ml-6"
-                >
-                {weightingScheme
-                    ? Object.values(WeightingSchemes).find((scheme) => scheme === weightingScheme)
-                    : "Select framework..."}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-                <Command>
-                <CommandList>
-                    <CommandEmpty>No framework found.</CommandEmpty>
-                    <CommandGroup>
-                    {Object.values(WeightingSchemes).map((scheme) => (
-                        <CommandItem
-                        key={scheme}
-                        value={scheme}
-                        onSelect={(newWeightingScheme) => {
-                            setWeightingScheme(newWeightingScheme as WeightingScheme)
-                            setOpen(false)
-                        }}
-                        >
-                        <Check
-                            className={cn(
-                            "mr-2 h-4 w-4",
-                            weightingScheme === scheme ? "opacity-100" : "opacity-0"
-                            )}
-                        />
-                        {scheme}
-                        </CommandItem>
-                    ))}
-                    </CommandGroup>
-                </CommandList>
-                </Command>
-            </PopoverContent>
-            </Popover>
-    )
-}
+import { Button } from "@/components/ui/button";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 
 export default function QuerySettings() {
-    const {
-        useStemming,
-        useStopWordElim,
-        useIDF, 
-        useNormalization,
-        numberExpansionWords,
-        setUseStemming,
-        setStopWordElim,
-        setUseIDF,
-        setUseNormalization,
-        setNumberExpansionWords
-    } = useQuerySettingsStore()
-
     return (
-        <section className="flex flex-col gap-4 justify-center">
-            <h2 className="text-2xl font-bold pb-4">Search Settings</h2>
-
-            <h4 className="text-l font-bold">Vocabulary</h4>
-            <div className="flex items-center justify-between w-full">
-                <Label className="font-medium" htmlFor="use-stemming">
-                    <ScissorsLineDashed />
-                    Stemming
-                </Label>
-                <Switch className="cursor-pointer" id="use-stemming" checked={useStemming} onCheckedChange={(e) => setUseStemming(e)} />
-            </div>
-            <div className="flex items-center justify-between w-full">
-                <Label className="font-medium" htmlFor="use-stopwordelim">
-                    <SquareSlash />
-                    Stop-Word Elimination
-                </Label>
-                <Switch className="cursor-pointer" id="use-stopwordelim" checked={useStopWordElim} onCheckedChange={(e) => setStopWordElim(e)}/>
-            </div>
-
-            <h4 className="text-l font-bold">Term Weighting</h4>
-            <div className="flex flex-col gap-4">
-                <Label className="font-medium">
-                    <FlaskConical />
-                    Term 
-                </Label>
-                <WeightSchemeCombobox />
-            </div>
-            <div className="flex items-center justify-between w-full">
-                <Label className="font-medium" htmlFor="use-stopwordelim">
-                    <SquareSlash />
-                    Inverse Document 
-                </Label>
-                <Switch className="cursor-pointer" id="use-stopwordelim" checked={useIDF} onCheckedChange={(e) => setUseIDF(e)}/>
-            </div>
-
-            <h4 className="text-l font-bold">Similarity Calculation</h4>
-            <div className="flex items-center justify-between w-full">
-                <Label className="font-medium" htmlFor="use-stopwordelim">
-                    <SquareSlash />
-                    Normalization
-                </Label>
-                <Switch className="cursor-pointer" id="use-stopwordelim" checked={useNormalization} onCheckedChange={(e) => setUseNormalization(e)}/>
-            </div>
-            
-            <h4 className="text-l font-bold">Word Expansion</h4>
-            <div className="flex items-center justify-between ">
-                <Label className="font-medium" htmlFor="use-stopwordelim">
-                    <SquareSlash />
-                    Number Words
-                </Label>
-                <div className="flex items-center justify-between w-1/2">
-                    <Switch className="cursor-pointer" id="use-stopwordelim" checked={numberExpansionWords == -1} onCheckedChange={(e) => numberExpansionWords == -1 ? setNumberExpansionWords(4) : setNumberExpansionWords(-1)}/>
-                    <Label className="font-medium" htmlFor="use-stopwordelim">
-                        All
-                    </Label>
-                    <Input type="number" className="w-1/2 text-center" value={numberExpansionWords == -1 ? "" : numberExpansionWords} onChange={(e) => setNumberExpansionWords(parseInt(e.target.value))} disabled={numberExpansionWords === -1}/>
+        <div className="w-full">
+            <nav aria-label="Pagination" className="isolate inline-flex -space-x-px rounded-md shadow-xs w-full pb-3">
+                <a
+                href="#"
+                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                <span className="sr-only">Previous</span>
+                <ArrowLeft aria-hidden="true" className="size-5" />
+                </a>
+                <a
+                href="#"
+                aria-current="page"
+                className="relative z-10 w-full inline-flex items-center justify-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 text-center"
+                >
+                Query
+                </a>
+                <a
+                href="#"
+                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                <span className="sr-only">Next</span>
+                <ArrowRight aria-hidden="true" className="size-5" />
+                </a>
+            </nav>
+            <div className="flex items-center justify-between">
+                <div className="flex items-center bg-white rounded-full px-4 py-2 w-7/10 max-w-4xl overflow-hidden">
+                    <span className="text-black font-medium whitespace-nowrap">Suggested Expansion</span>
+                    <div className="ml-4 flex-1 overflow-x-auto whitespace-nowrap scrollbar-hide flex-nowrap">
+                        <div className="inline-flex gap-2 flex-nowrap">
+                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
+                        </div>
+                    </div>
                 </div>
+                <Button variant={"outline"}  className="px-4 py-2 hover:cursor-pointer rounded-xs" disabled>
+                    Average Precision: 99.99
+                </Button> 
             </div>
-        </section>
-    )
+        </div>
+)
 }

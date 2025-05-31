@@ -1,9 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
-
 import { useMainStore } from "@/store/mainStore";
-
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 
@@ -13,8 +11,6 @@ export default function QueryHistory() {
         currentViewableQuery,
         setCurrentQueryPair,
     } = useMainStore()
-
-    
 
     return (
         <section className="h-full">
