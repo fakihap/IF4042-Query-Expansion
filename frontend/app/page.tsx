@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getDocuments, getQueryPairs, getQuery } from "./actions";
+import { getDocuments, getQueryPairs, getQuery, startSearch } from "./actions";
 import { useMainStore } from "@/store/mainStore";
+import { useQuerySettingsStore } from "@/store/querySettingsStore";
 import type { Query } from "@/store/mainStore";
+
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
@@ -28,6 +30,14 @@ export default function Home() {
     setCurrentViewableQuery,
     setOpenSidebar,
   } = useMainStore()
+
+  const {
+    useStemming,
+    useStopWordElim,
+    weightingScheme,
+    useIDF,
+    useNormalization,
+  } = useQuerySettingsStore()
 
   // history
   useEffect(() => {
@@ -91,7 +101,14 @@ export default function Home() {
                 <section className="w-full flex gap-6 py-2">
                   <Input className="rounded-xs" placeholder="Search Document" />
                   <span className="flex gap-2">
-                    <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
+                    <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs" onClick={() => console.log(startSearch({
+                      queries: ["test search from button"],
+                      useStemming: useStemming,
+                      useStopwordElim: useStopWordElim,
+                      tfMode: "augmented", // TODO: change to enum
+                      useIDF: useIDF, 
+                      useNormalize: useNormalization,
+                    }))}>
                       <Search />
                       Search
                     </Button> 
