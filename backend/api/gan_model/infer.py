@@ -9,10 +9,11 @@ def load_generator_model():
     pass
 
 def generate_expansion(query):
-    model = IRSystem(False, False, 'natural', True, False, 0)
-    result = model.retrieve(query)
-    
-    return [result]
+    model = IRSystem(False, False, 'natural', True, False, query.numberExpansionWords)
+    result = model.retrieve(query.queries[0])
+    expanded = model.getExpansion()
+
+    return [(result, expanded)]
 
 def return_inverted(document_id):
     model = IRSystem(False, False, 'natural', True, False, 0)

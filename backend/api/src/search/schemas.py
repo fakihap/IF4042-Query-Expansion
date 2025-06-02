@@ -16,6 +16,7 @@ class SearchBase(BaseModel):
     tfMode: TermFrequencyMode
     useIDF: bool
     useNormalize: bool
+    numberExpansionWords: int
 
 class SearchInvertBase(BaseModel):
     document_id: int
@@ -45,7 +46,7 @@ class SearchInvertRequest(SearchInvertBase):
     pass
 
 class SearchResponse(SearchBase):
-    result: list[list[SearchRank]]
+    result: list[tuple[list[SearchRank], list[str]]]
 
 class SearchInvertResponse(SearchInvertBase):
     result: SearchInverted

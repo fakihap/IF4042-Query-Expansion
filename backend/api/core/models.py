@@ -5,6 +5,8 @@ import numpy as np
 import json
 import re
 import os
+from sklearn.metrics.pairwise import cosine_similarity
+import joblib
 
 class IRSystem:
     def __init__(self, isStem, isEliminateStopWords, tfMode, isIDF, isNormalized, numberExpansion):
@@ -14,6 +16,7 @@ class IRSystem:
         self.isIDF = isIDF
         self.isNormalized = isNormalized
         self.numberExpansion = numberExpansion
+        self.expander = GenerativeAdversarialNetwork(self.isStem, self.isEliminateStopWords)
 
         self.stemmer = PorterStemmer()
         nltk.download('stopwords')
@@ -114,8 +117,12 @@ class IRSystem:
         weight = self.calculateIDF(weight)
         return weight 
     
-    def expand():
-        pass
+    def expand(self, token):
+        self.expanded = self.expander.forward(token, self.numberExpansion)
+        return token + self.expanded
+    
+    def getExpansion(self):
+        return self.expanded
 
     def similarity(self, weight_token):
         similarity_score = []
@@ -135,8 +142,9 @@ class IRSystem:
     def retrieve(self, query):
         token = self.stem(query)
         token = self.eliminateStopWords(token)
+        token = self.expand(token)
+
         weight = self.calculateWeight(token)
-        #expand self.expand()
         document_rank = self.similarity(weight)
         return document_rank
     
@@ -164,15 +172,46 @@ class IRSystem:
             }
         
 class GenerativeAdversarialNetwork:
-    def __init__(self):
-        pass
+    def __init__(self, isStem, isStopWords):
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        path = 'gan/raw-complete/'
 
-    def discriminator():
-        pass
+        self.model = joblib.load(os.path.join(base_path, path, 'model.joblib'))
+        self.vocab_embeddings = np.load(os.path.join(base_path, path, 'vocab_embeddings.npy'))
+        with open(os.path.join(base_path, path, 'vocab_words.txt'), 'r', encoding='utf-8') as f:
+            vocab_words = [line.strip() for line in f.readlines()]
 
-    def generator():
-        pass
+        self.vocab_words = np.array(vocab_words) 
+        self.word_to_index = {word: idx for idx, word in enumerate(self.vocab_words)}
 
-    def forward():
-        pass
+    def one_hot(self, idx, size):
+        vec = np.zeros(size)
+        vec[idx] = 1.0
+        return vec
+
+    def get_embedding(self, word):
+        idx = self.word_to_index[word]
+        one_hot_vec = self.one_hot(idx, len(self.vocab_words)).reshape(1, -1)
+        hidden = self.model.predict(one_hot_vec)
+        return hidden.flatten()
+
+    def discriminator(self, words, input_word, top_k=1):
+        filtered = [(word, sim) for word, sim in input_word if word not in words]
+        filtered_sorted = sorted(filtered, key=lambda x: x[1], reverse=True)
+        return [word for word, _ in filtered_sorted[:top_k]]
+
+    def generator(self, input_word, top_k=1):
+        input_emb = np.array(self.get_embedding(input_word)).reshape(1, -1)
+        sims = cosine_similarity(input_emb, self.vocab_embeddings)[0]  
+        top_k_indices = np.argsort(sims)[-top_k:][::-1]      
+        closest_words = [self.vocab_words[i] for i in top_k_indices]
+        similarities = [sims[i] for i in top_k_indices]
+        return list(zip(closest_words, similarities))
+
+    def forward(self, words, number_expansion):
+        generated = []
+        for word in words:
+            generated += self.generator(word, number_expansion)
+        
+        return self.discriminator(words, generated, number_expansion)
     

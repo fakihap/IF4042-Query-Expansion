@@ -3,7 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 
-export default function QuerySettings() {
+type QuerySettingsProps = {
+  data: string[];
+};
+
+export default function QuerySettings({data}: QuerySettingsProps) {
     return (
         <div className="w-full">
             <nav aria-label="Pagination" className="isolate inline-flex -space-x-px rounded-md shadow-xs w-full pb-3">
@@ -34,11 +38,11 @@ export default function QuerySettings() {
                     <span className="text-black font-medium whitespace-nowrap">Suggested</span>
                     <div className="ml-4 flex-1 overflow-x-auto whitespace-nowrap scrollbar-hide flex-nowrap">
                         <div className="inline-flex gap-2 flex-nowrap w-1">
-                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
-                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
-                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
-                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
-                            <span className="bg-gray-200 text-black px-4 py-1 rounded-md">Word 1</span>
+                            {data.map((item, index) => (
+                                <span className="bg-gray-200 text-black px-4 py-1 rounded-md" key={`${item}-${index}`}>
+                                    {item}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </div>

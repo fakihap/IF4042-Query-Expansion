@@ -37,10 +37,12 @@ export default function Home() {
     weightingScheme,
     useIDF,
     useNormalization,
+    numberExpansionWords
   } = useQuerySettingsStore()
 
   const [searchPrompt, setSearchPrompt] = useState<string>()
   const [documents, setDocuments] = useState<Document[]>([])
+  const [expansion, setExpansion] = useState<string[]>([])
 
   // history
   useEffect(() => {
@@ -90,13 +92,12 @@ export default function Home() {
       tfMode: "augmented", // TODO: change to enum
       useIDF: useIDF, 
       useNormalize: useNormalization,
+      numberExpansionWords: numberExpansionWords
     })
     // .then(data => console.log('POST ', data, data.result))
     // .then(data => setCurrentQueryResult(data)) ///////////////////////
-
-    console.log(res.result)
-    setCurrentQueryResult(res.result)
-
+    setCurrentQueryResult(res.result[0])
+    setExpansion(res.result[0][1])
   }
   
   return (
@@ -157,7 +158,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <QuerySettings/>
+                  <QuerySettings data={expansion}/>
 
                   {currentQueryResult.length > 0 &&
                   <DocumentList data={currentQueryResult[0].map(r => {

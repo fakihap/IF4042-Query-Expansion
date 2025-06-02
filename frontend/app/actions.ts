@@ -11,13 +11,14 @@ export async function getDocuments() {
     return await res.json();
 }
 
-export async function startSearch({queries, useStemming, useStopwordElim, tfMode, useIDF, useNormalize}: {
+export async function startSearch({queries, useStemming, useStopwordElim, tfMode, useIDF, useNormalize, numberExpansionWords}: {
     queries: string[],
     useStemming: boolean,
     useStopwordElim: boolean,
     tfMode: string, // TODO: change to enum
     useIDF: boolean, 
     useNormalize: boolean,
+    numberExpansionWords: number
 }) {
     const res = await fetch("http://localhost:8000/search", {
         method: "POST",
@@ -29,6 +30,7 @@ export async function startSearch({queries, useStemming, useStopwordElim, tfMode
             tfMode: tfMode,
             useIDF: useIDF,
             useNormalize: useNormalize,
+            numberExpansionWords: numberExpansionWords
         })
     });
 
