@@ -12,7 +12,7 @@ async def start_search(
 ) -> SearchResponse:
     
     try:
-        rank_result = generate_expansion() # NOTE: for now, its a batch process
+        rank_result = generate_expansion(search_params.queries[0]) # NOTE: for now, its a batch process
 
         return {
             "queries": search_params.queries,
@@ -21,7 +21,6 @@ async def start_search(
             "tfMode": search_params.tfMode,
             "useIDF": search_params.useIDF,
             "useNormalize": search_params.useNormalize,
-
             "result": rank_result
         }
 

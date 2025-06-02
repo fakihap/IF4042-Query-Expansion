@@ -5,9 +5,7 @@ import { WeightingScheme } from "./querySettingsStore";
 type QueryPair = {
   query_id: number,
   expanded_query_id: number,
-
   terms_expanded: number,
-
   used_stemming: boolean,
   removed_stopword: boolean,
   scheme_used: WeightingScheme,

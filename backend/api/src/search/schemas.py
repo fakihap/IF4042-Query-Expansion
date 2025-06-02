@@ -11,10 +11,8 @@ class TermFrequencyMode(Enum):
 
 class SearchBase(BaseModel):
     queries: list[str]
-
     useStemming: bool
     useStopwordElim: bool
-
     tfMode: TermFrequencyMode
     useIDF: bool
     useNormalize: bool

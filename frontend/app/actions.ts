@@ -26,9 +26,7 @@ export async function startSearch({queries, useStemming, useStopwordElim, tfMode
             queries: queries,
             useStemming: useStemming,
             useStopwordElim: useStopwordElim,
-            
             tfMode: tfMode,
-            
             useIDF: useIDF,
             useNormalize: useNormalize,
         })

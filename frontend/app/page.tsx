@@ -94,7 +94,7 @@ export default function Home() {
     // .then(data => console.log('POST ', data, data.result))
     // .then(data => setCurrentQueryResult(data)) ///////////////////////
 
-    // console.log(res.result)
+    console.log(res.result)
     setCurrentQueryResult(res.result)
 
   }

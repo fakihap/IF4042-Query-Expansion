@@ -31,7 +31,7 @@ export default function CardDocument({ title, abstract, similarity }: CardDocume
                     </div>
                     <div className="flex flex-col w-1/10 items-center">
                         <h6 className="text-xs">Similarity</h6>
-                        <h2 className="text-2xl font-bold">{similarity}</h2>
+                        <h2 className="text-2xl font-bold">{similarity.toFixed(2)}</h2>
                     </div>
                 </div>
             </CardHeader>

@@ -61,7 +61,7 @@ export default function DocumentList({data}: {
             key={index}
             title={doc.title}
             abstract={doc.abstract}
-            similarity={98.76} // fallback similarity
+            similarity={doc.similarity} // fallback similarity
           />
         ))}
       </div>

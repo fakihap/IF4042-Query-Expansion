@@ -4,3 +4,5 @@ asyncpg==0.30.0
 sqlalchemy==2.0.41
 pydantic_settings==2.9.1
 alembic==1.16.1
+nltk
+numpy
