@@ -13,3 +13,9 @@ def generate_expansion(query):
     result = model.retrieve(query)
     
     return [result]
+
+def return_inverted(document_id):
+    model = IRSystem(False, False, 'natural', True, False, 0)
+    result = model.retrieve_invert(document_id)
+    
+    return result

@@ -21,22 +21,39 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import data from "./cisi.json"; 
+import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
+import { searchInvertedFile } from "../actions";
+import { useQuerySettingsStore } from "@/store/querySettingsStore";
 
 export default function InvertedViewer() {
     const [docId, setDocId] = useState("");
-    const docs = data
-    const [currentDoc, setCurrentDoc] = useState({"id": -1, "title": "", "author": "", "abstract": ""});
+    const [currentDoc, setCurrentDoc] = useState({"id": -1, "title": "", "author": "", "abstract": "", "tf":[], "idf":[]});
+    const {
+        useStemming,
+        useStopWordElim,
+        weightingScheme,
+        useIDF,
+        useNormalization,
+      } = useQuerySettingsStore()
 
-    const handleSearch = () => {
-    if (docId) {
-        const foundDoc = data.find((doc) => doc.id === parseInt(docId));
-        if (foundDoc) {
-            setCurrentDoc(foundDoc);
-        } else {
-            setCurrentDoc({"id": -1, "title": "", "author": "", "abstract": ""})
-        }
-    }
+    const handleSearch = async () => {
+      if (docId) {
+          const res = await searchInvertedFile({
+                document_id: parseInt(docId),
+                useStemming: useStemming,
+                useStopwordElim: useStopWordElim,
+                tfMode: "augmented",
+                useIDF: useIDF, 
+                useNormalize: useNormalization,
+              })
+          
+          console.log(res)
+          if (res.result.id != -1) {
+              setCurrentDoc({"id": -1, "title": "", "author": "", "abstract": "", "tf":[], "idf":[]});
+          } else {
+              setCurrentDoc({"id": -1, "title": "", "author": "", "abstract": "", "tf":[], "idf":[]})
+          }
+      }
     };
 
     return (
@@ -65,50 +82,142 @@ export default function InvertedViewer() {
                                                                 ? currentDoc.abstract.slice(0, 100) + "..."
                                                                 : currentDoc.abstract}</h2>
 
-              <div className="flex w-full justify-end">
-                <section className="w-1/3 flex py-2">
-                  <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
-                      <Search />
-                  </Button> 
-                  <Input className="rounded-xs" placeholder="Search Vocabulary" />
-                </section>
-              </div>
+              <Tabs defaultValue="abstract" asChild>
+                <div>
+                  <div className="flex w-full justify-end">
+                    <section className="w-2/3 flex py-2 gap-2 justify-end">
+                      <TabsList>
+                        <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="title">Title</TabsTrigger>
+                        <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="author">Author</TabsTrigger>
+                        <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="abstract">Abstract</TabsTrigger>
+                      </TabsList>
+                      <div className="flex 1/2">
+                        <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
+                          <Search />
+                        </Button> 
+                        <Input className="rounded-xs" placeholder="Search Vocabulary" />
+                      </div>
+                    </section>
+                  </div>
 
-              <Table>
-                <TableHeader>
-                    <TableRow>
-                    <TableHead className="text-center">Word</TableHead>
-                    <TableHead className="text-center">Weight</TableHead>
-                    </TableRow>
-                </TableHeader>
-                {Array.from({ length: 10 }).map((_, i) => (
-                <TableBody key={i}>
-                    <TableRow>
-                    <TableCell className="font-medium text-center">word</TableCell>
-                    <TableCell className="text-center">250.00</TableCell>
-                    </TableRow>
-                </TableBody>
-                ))}
-            </Table>
+                  <TabsContent value="title">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-center">Word</TableHead>
+                          <TableHead className="text-center">TF</TableHead>
+                          <TableHead className="text-center">IDF</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {Array.from({ length: 10 }).map((_, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium text-center">word</TableCell>
+                            <TableCell className="text-center">250.00</TableCell>
+                            <TableCell className="text-center">250.00</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="flex items-center justify-center">
+                      <Pagination>
+                      <PaginationContent>
+                          <PaginationItem>
+                          <PaginationPrevious href="#" />
+                          </PaginationItem>
+                          <PaginationItem>
+                          <PaginationLink href="#">1</PaginationLink>
+                          </PaginationItem>
+                          <PaginationItem>
+                          <PaginationEllipsis />
+                          </PaginationItem>
+                          <PaginationItem>
+                          <PaginationNext href="#" />
+                          </PaginationItem>
+                      </PaginationContent>
+                      </Pagination>
+                    </div>
+                  </TabsContent>
 
-            <div className="flex items-center justify-center">
-                <Pagination>
-                <PaginationContent>
-                    <PaginationItem>
-                    <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                    <PaginationLink href="#">1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                    <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                    <PaginationNext href="#" />
-                    </PaginationItem>
-                </PaginationContent>
-                </Pagination>
-            </div>
+                  <TabsContent value="author">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-center">Word</TableHead>
+                          <TableHead className="text-center">TF</TableHead>
+                          <TableHead className="text-center">IDF</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {Array.from({ length: 10 }).map((_, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium text-center">word</TableCell>
+                            <TableCell className="text-center">50.00</TableCell>
+                            <TableCell className="text-center">50.00</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="flex items-center justify-center">
+                      <Pagination>
+                      <PaginationContent>
+                          <PaginationItem>
+                          <PaginationPrevious href="#" />
+                          </PaginationItem>
+                          <PaginationItem>
+                          <PaginationLink href="#">1</PaginationLink>
+                          </PaginationItem>
+                          <PaginationItem>
+                          <PaginationEllipsis />
+                          </PaginationItem>
+                          <PaginationItem>
+                          <PaginationNext href="#" />
+                          </PaginationItem>
+                      </PaginationContent>
+                      </Pagination>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="abstract">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-center">Word</TableHead>
+                          <TableHead className="text-center">TF</TableHead>
+                          <TableHead className="text-center">IDF</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {Array.from({ length: 10 }).map((_, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium text-center">word</TableCell>
+                            <TableCell className="text-center">20.00</TableCell>
+                            <TableCell className="text-center">20.00</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="flex items-center justify-center">
+                      <Pagination>
+                      <PaginationContent>
+                          <PaginationItem>
+                          <PaginationPrevious href="#" />
+                          </PaginationItem>
+                          <PaginationItem>
+                          <PaginationLink href="#">1</PaginationLink>
+                          </PaginationItem>
+                          <PaginationItem>
+                          <PaginationEllipsis />
+                          </PaginationItem>
+                          <PaginationItem>
+                          <PaginationNext href="#" />
+                          </PaginationItem>
+                      </PaginationContent>
+                      </Pagination>
+                    </div>
+                  </TabsContent>
+                </div>
+            </Tabs>
         </div>
     )
 }

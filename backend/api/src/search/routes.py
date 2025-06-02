@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from api.src.search.schemas import SearchResponse, SearchRequest
+from api.src.search.schemas import SearchResponse, SearchRequest, SearchInverted, SearchInvertRequest, SearchInvertResponse
 
-from api.gan_model.infer import generate_expansion
+from api.gan_model.infer import generate_expansion, return_inverted
 
 router = APIRouter(prefix="/search", tags=["search"])
 
@@ -27,6 +27,29 @@ async def start_search(
     except Exception as e:
         print(e)
         raise
+
+@router.post("/inverted", response_model=SearchInvertResponse)
+async def start_inverted(
+    search_params: SearchInvertRequest
+) -> SearchInvertResponse:
+    
+    try:
+        result = return_inverted(search_params.document_id)
+
+        return {
+            "document_id": search_params.document_id,
+            "useStemming": search_params.useStemming,
+            "useStopwordElim": search_params.useStopwordElim,
+            "tfMode": search_params.tfMode,
+            "useIDF": search_params.useIDF,
+            "useNormalize": search_params.useNormalize,
+            "result": result
+        }
+
+    except Exception as e:
+        print(e)
+        raise
+
 
 
 # @router.get("/", response_model=list[SearchResponse])

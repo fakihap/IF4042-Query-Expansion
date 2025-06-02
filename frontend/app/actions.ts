@@ -37,6 +37,32 @@ export async function startSearch({queries, useStemming, useStopwordElim, tfMode
     return result
 }
 
+export async function searchInvertedFile({document_id, useStemming, useStopwordElim, tfMode, useIDF, useNormalize}: {
+    document_id: number,
+    useStemming: boolean,
+    useStopwordElim: boolean,
+    tfMode: string, // TODO: change to enum
+    useIDF: boolean, 
+    useNormalize: boolean,
+}) {
+    const res = await fetch("http://localhost:8000/search/inverted", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            document_id: document_id,
+            useStemming: useStemming,
+            useStopwordElim: useStopwordElim,
+            tfMode: tfMode,
+            useIDF: useIDF,
+            useNormalize: useNormalize,
+        })
+    });
+
+    const result = await res.json()
+
+    return result
+}
+
 export async function getQueryPairs() {
     const res = await fetch("http://localhost:8000/pairs", {
         method: "GET",
