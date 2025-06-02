@@ -148,8 +148,8 @@ class IRSystem:
                 "author": doc['author'],
                 "abstract": doc['abstract'],
                 "vocab": [self.vocabulary_title, self.vocabulary_author, self.vocabulary_abstract],
-                "tf": [self.title_weight[document_id -1], self.author_weight[document_id -1], self.abstract_weight[document_id -1]],
-                "idf": [self.title_idf, self.author_idf, self.abstract_idf]
+                "tf": [self.title_weight[document_id -1][:-1], self.author_weight[document_id -1][:-1], self.abstract_weight[document_id -1][:-1]],
+                "idf": [self.title_idf[:-1], self.author_idf[:-1], self.abstract_idf[:-1]]
             }
         
         return {

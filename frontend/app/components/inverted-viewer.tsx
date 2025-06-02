@@ -27,7 +27,7 @@ import { useQuerySettingsStore } from "@/store/querySettingsStore";
 
 export default function InvertedViewer() {
     const [docId, setDocId] = useState("");
-    const [currentDoc, setCurrentDoc] = useState({"id": -1, "title": "", "author": "", "abstract": "", "tf":[], "idf":[]});
+    const [currentDoc, setCurrentDoc] = useState({"id": -1, "title": "", "author": "", "vocab":[[]], "abstract": "", "tf":[[]], "idf":[[]]});
     const {
         useStemming,
         useStopWordElim,
@@ -48,10 +48,10 @@ export default function InvertedViewer() {
               })
           
           console.log(res)
-          if (res.result.id != -1) {
-              setCurrentDoc({"id": -1, "title": "", "author": "", "abstract": "", "tf":[], "idf":[]});
+          if (res.result.document_id != -1) {
+              setCurrentDoc({"id": res.result.document_id, "title": res.result.title, "author": res.result.author, "abstract": res.result.abstract, "tf": res.result.tf, "idf":res.result.idf, "vocab":res.result.vocab});
           } else {
-              setCurrentDoc({"id": -1, "title": "", "author": "", "abstract": "", "tf":[], "idf":[]})
+              setCurrentDoc({"id": -1, "title": "", "author": "", "abstract": "", "tf":[[]], "idf":[[]], "vocab": [[]]})
           }
       }
     };
@@ -110,11 +110,11 @@ export default function InvertedViewer() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {Array.from({ length: 10 }).map((_, i) => (
+                        {currentDoc.id !== -1 && Array.from({ length: currentDoc.vocab[0].length }).map((_, i) => (
                           <TableRow key={i}>
-                            <TableCell className="font-medium text-center">word</TableCell>
-                            <TableCell className="text-center">250.00</TableCell>
-                            <TableCell className="text-center">250.00</TableCell>
+                            <TableCell className="font-medium text-center">{currentDoc.vocab[0][i]}</TableCell>
+                            <TableCell className="text-center">{currentDoc.tf[0][i]}</TableCell>
+                            <TableCell className="text-center">{currentDoc.idf[0][i]}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -149,11 +149,11 @@ export default function InvertedViewer() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {Array.from({ length: 10 }).map((_, i) => (
+                        {currentDoc.id !== -1 && Array.from({ length: currentDoc.vocab[1].length }).map((_, i) => (
                           <TableRow key={i}>
-                            <TableCell className="font-medium text-center">word</TableCell>
-                            <TableCell className="text-center">50.00</TableCell>
-                            <TableCell className="text-center">50.00</TableCell>
+                            <TableCell className="font-medium text-center">{currentDoc.vocab[1][i]}</TableCell>
+                            <TableCell className="text-center">{currentDoc.tf[1][i]}</TableCell>
+                            <TableCell className="text-center">{currentDoc.idf[1][i]}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -188,11 +188,11 @@ export default function InvertedViewer() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {Array.from({ length: 10 }).map((_, i) => (
+                        {currentDoc.id !== -1 && Array.from({ length: currentDoc.vocab[2].length }).map((_, i) => (
                           <TableRow key={i}>
-                            <TableCell className="font-medium text-center">word</TableCell>
-                            <TableCell className="text-center">20.00</TableCell>
-                            <TableCell className="text-center">20.00</TableCell>
+                            <TableCell className="font-medium text-center">{currentDoc.vocab[2][i]}</TableCell>
+                            <TableCell className="text-center">{currentDoc.tf[2][i]}</TableCell>
+                            <TableCell className="text-center">{currentDoc.idf[2][i]}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

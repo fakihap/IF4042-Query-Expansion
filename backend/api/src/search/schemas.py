@@ -32,6 +32,7 @@ class SearchRank(BaseModel):
 class SearchInverted(BaseModel):
     document_id: int
     title: str
+    author: str
     abstract: str
     vocab: list[list[str]]
     tf: list[list[float]]
