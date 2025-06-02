@@ -136,6 +136,7 @@ class IRSystem:
         token = self.stem(query)
         token = self.eliminateStopWords(token)
         weight = self.calculateWeight(token)
+        #expand self.expand()
         document_rank = self.similarity(weight)
         return document_rank
     

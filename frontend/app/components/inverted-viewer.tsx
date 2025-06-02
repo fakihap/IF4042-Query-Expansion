@@ -24,9 +24,16 @@ import {
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
 import { searchInvertedFile } from "../actions";
 import { useQuerySettingsStore } from "@/store/querySettingsStore";
+import PageButtons from "./pagination";
+
+const ITEMS_PER_PAGE = 5;
+const MAX_PAGE_BUTTONS = 5;
 
 export default function InvertedViewer() {
     const [docId, setDocId] = useState("");
+    const [currentTitle, setCurrentTitle] = useState<number[]>([]);
+    const [currentAuthor, setCurrentAuthor] = useState<number[]>([]);
+    const [currentAbstract, setCurrentAbstract] = useState<number[]>([]);
     const [currentDoc, setCurrentDoc] = useState({"id": -1, "title": "", "author": "", "vocab":[[]], "abstract": "", "tf":[[]], "idf":[[]]});
     const {
         useStemming,
@@ -110,32 +117,19 @@ export default function InvertedViewer() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {currentDoc.id !== -1 && Array.from({ length: currentDoc.vocab[0].length }).map((_, i) => (
-                          <TableRow key={i}>
-                            <TableCell className="font-medium text-center">{currentDoc.vocab[0][i]}</TableCell>
-                            <TableCell className="text-center">{currentDoc.tf[0][i]}</TableCell>
-                            <TableCell className="text-center">{currentDoc.idf[0][i]}</TableCell>
+                        {currentDoc.id !== -1 && currentTitle.map((idx) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-medium text-center">{currentDoc.vocab[0][idx]}</TableCell>
+                            <TableCell className="text-center">{currentDoc.tf[0][idx]}</TableCell>
+                            <TableCell className="text-center">{currentDoc.idf[0][idx]}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
                     <div className="flex items-center justify-center">
-                      <Pagination>
-                      <PaginationContent>
-                          <PaginationItem>
-                          <PaginationPrevious href="#" />
-                          </PaginationItem>
-                          <PaginationItem>
-                          <PaginationLink href="#">1</PaginationLink>
-                          </PaginationItem>
-                          <PaginationItem>
-                          <PaginationEllipsis />
-                          </PaginationItem>
-                          <PaginationItem>
-                          <PaginationNext href="#" />
-                          </PaginationItem>
-                      </PaginationContent>
-                      </Pagination>
+                      {
+                        currentDoc.id !== -1 && <PageButtons data={currentDoc.vocab[0]} setCurrentItems={setCurrentTitle}/>
+                      }
                     </div>
                   </TabsContent>
 
@@ -149,7 +143,7 @@ export default function InvertedViewer() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {currentDoc.id !== -1 && Array.from({ length: currentDoc.vocab[1].length }).map((_, i) => (
+                        {currentDoc.id !== -1 && currentAuthor.map((i) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium text-center">{currentDoc.vocab[1][i]}</TableCell>
                             <TableCell className="text-center">{currentDoc.tf[1][i]}</TableCell>
@@ -159,22 +153,9 @@ export default function InvertedViewer() {
                       </TableBody>
                     </Table>
                     <div className="flex items-center justify-center">
-                      <Pagination>
-                      <PaginationContent>
-                          <PaginationItem>
-                          <PaginationPrevious href="#" />
-                          </PaginationItem>
-                          <PaginationItem>
-                          <PaginationLink href="#">1</PaginationLink>
-                          </PaginationItem>
-                          <PaginationItem>
-                          <PaginationEllipsis />
-                          </PaginationItem>
-                          <PaginationItem>
-                          <PaginationNext href="#" />
-                          </PaginationItem>
-                      </PaginationContent>
-                      </Pagination>
+                      {
+                        currentDoc.id !== -1 && <PageButtons data={currentDoc.vocab[1]} setCurrentItems={setCurrentAuthor}/>
+                      }
                     </div>
                   </TabsContent>
 
@@ -188,7 +169,7 @@ export default function InvertedViewer() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {currentDoc.id !== -1 && Array.from({ length: currentDoc.vocab[2].length }).map((_, i) => (
+                        {currentDoc.id !== -1 && currentAbstract.map((i) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium text-center">{currentDoc.vocab[2][i]}</TableCell>
                             <TableCell className="text-center">{currentDoc.tf[2][i]}</TableCell>
@@ -198,22 +179,9 @@ export default function InvertedViewer() {
                       </TableBody>
                     </Table>
                     <div className="flex items-center justify-center">
-                      <Pagination>
-                      <PaginationContent>
-                          <PaginationItem>
-                          <PaginationPrevious href="#" />
-                          </PaginationItem>
-                          <PaginationItem>
-                          <PaginationLink href="#">1</PaginationLink>
-                          </PaginationItem>
-                          <PaginationItem>
-                          <PaginationEllipsis />
-                          </PaginationItem>
-                          <PaginationItem>
-                          <PaginationNext href="#" />
-                          </PaginationItem>
-                      </PaginationContent>
-                      </Pagination>
+                      {
+                        currentDoc.id !== -1 && <PageButtons data={currentDoc.vocab[2]} setCurrentItems={setCurrentAbstract}/>
+                      }
                     </div>
                   </TabsContent>
                 </div>
