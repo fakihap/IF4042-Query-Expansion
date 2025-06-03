@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from enum import Enum
 
 class TermFrequencyMode(Enum):
-    Logarithmic = 'log'
+    Logarithmic = 'logarithmic'
     Binary = 'binary'
     Augmented = 'augmented'
     Natural = 'natural'

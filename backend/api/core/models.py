@@ -8,8 +8,10 @@ import os
 from sklearn.metrics.pairwise import cosine_similarity
 import joblib
 
+from api.src.search.schemas import TermFrequencyMode
+
 class IRSystem:
-    def __init__(self, isStem, isEliminateStopWords, tfMode, isIDF, isNormalized, numberExpansion):
+    def __init__(self, isStem, isEliminateStopWords, tfMode: TermFrequencyMode, isIDF, isNormalized, numberExpansion):
         self.isStem = isStem
         self.isEliminateStopWords = isEliminateStopWords
         self.tfMode = tfMode
