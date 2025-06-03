@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from enum import Enum
 
 class TermFrequencyMode(Enum):
-    Logarithmic = 'log'
+    Logarithmic = 'logarithmic'
     Binary = 'binary'
     Augmented = 'augmented'
     Natural = 'natural'
@@ -46,7 +46,7 @@ class SearchInvertRequest(SearchInvertBase):
     pass
 
 class SearchResponse(SearchBase):
-    result: list[tuple[list[SearchRank], list[str]]]
+    result: list[tuple[list[SearchRank], list[str], list[float], list[float], list[str]]]
 
 class SearchInvertResponse(SearchInvertBase):
     result: SearchInverted

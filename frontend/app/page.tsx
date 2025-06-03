@@ -4,20 +4,16 @@ import { useState, useEffect } from "react";
 import { getDocuments, getQueryPairs, getQuery, startSearch } from "./actions";
 import { useMainStore, Document } from "@/store/mainStore";
 import { useQuerySettingsStore } from "@/store/querySettingsStore";
-import type { Query } from "@/store/mainStore";
-
-import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
 import QuerySettings from "./components/query-settings";
-import QueryHistory from "./components/query-history";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, SearchCheck, PanelLeft, ArrowRight, ArrowLeft } from "lucide-react";
+import { Search, SearchCheck, PanelLeft, ArrowRight, ArrowLeft, Weight } from "lucide-react";
 import SearchSettings from "./components/search-settings";
 import DocumentList from "./components/document-list";
 import InvertedViewer from "./components/inverted-viewer";
+import WeightTable from "./components/weight-table";
 
 export default function Home() {
   const {
@@ -43,6 +39,8 @@ export default function Home() {
   const [searchPrompt, setSearchPrompt] = useState<string>()
   const [documents, setDocuments] = useState<Document[]>([])
   const [expansion, setExpansion] = useState<string[]>([])
+  const [currentWeight, setCurrentWeight] = useState<number[][]>([])
+  const [currentVocabulary, setCurrentVocabulary] = useState<string[]>([])
 
   // history
   useEffect(() => {
@@ -98,6 +96,8 @@ export default function Home() {
     // .then(data => setCurrentQueryResult(data)) ///////////////////////
     setCurrentQueryResult(res.result[0])
     setExpansion(res.result[0][1])
+    setCurrentWeight([res.result[0][2], res.result[0][3]])
+    setCurrentVocabulary(res.result[0][4])
   }
   
   return (
@@ -159,25 +159,44 @@ export default function Home() {
                   </div>
 
                   <QuerySettings data={expansion}/>
+                  <Tabs defaultValue="document" asChild>
+                    <div>
+                      <div className="w-full flex items-center justify-end gap-3 h-[36px]">
+                        <TabsList>
+                          <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="document">Document</TabsTrigger>
+                          <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="weight">Weight</TabsTrigger>
+                        </TabsList>
+                      </div>
+                      
+                      <TabsContent value="document">
+                        {currentQueryResult.length > 0 &&
+                          <DocumentList data={currentQueryResult[0].map(r => {
+                            const relevantDoc = documents.filter(doc => doc.id == r.document_id)
 
-                  {currentQueryResult.length > 0 &&
-                  <DocumentList data={currentQueryResult[0].map(r => {
-                    const relevantDoc = documents.filter(doc => doc.id == r.document_id)
-
-                    // console.log({
-                    //   title: relevantDoc[0].title,
-                    //   abstract: relevantDoc[0].abstract,
-                    //   ...r
-                    // })
+                            // console.log({
+                            //   title: relevantDoc[0].title,
+                            //   abstract: relevantDoc[0].abstract,
+                            //   ...r
+                            // })
 
 
-                    return {
-                      title: relevantDoc[0].title,
-                      abstract: relevantDoc[0].content,
-                      ...r
-                    }
-                  })} />
-                  }
+                            return {
+                              title: relevantDoc[0].title,
+                              abstract: relevantDoc[0].content,
+                              ...r
+                            }
+                          })} />
+                          }
+                      </TabsContent>
+                      <TabsContent value="weight">
+                        <WeightTable data={currentWeight} vocab={currentVocabulary} />
+                      </TabsContent>
+                    </div>
+                  </Tabs>
+
+                  
+
+                  
                 </section>
               </section>
             </TabsContent>

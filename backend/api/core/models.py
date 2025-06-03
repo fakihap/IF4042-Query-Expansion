@@ -8,8 +8,10 @@ import os
 from sklearn.metrics.pairwise import cosine_similarity
 import joblib
 
+from api.src.search.schemas import TermFrequencyMode
+
 class IRSystem:
-    def __init__(self, isStem, isEliminateStopWords, tfMode, isIDF, isNormalized, numberExpansion):
+    def __init__(self, isStem, isEliminateStopWords, tfMode: TermFrequencyMode, isIDF, isNormalized, numberExpansion):
         self.isStem = isStem
         self.isEliminateStopWords = isEliminateStopWords
         self.tfMode = tfMode
@@ -19,7 +21,7 @@ class IRSystem:
         self.expander = GenerativeAdversarialNetwork(self.isStem, self.isEliminateStopWords)
 
         self.stemmer = PorterStemmer()
-        nltk.download('stopwords')
+        # nltk.download('stopwords')
         self.stopwords = set(stopwords.words('english'))
 
         base_path = os.path.dirname(os.path.abspath(__file__))
@@ -109,12 +111,15 @@ class IRSystem:
             
     def calculateIDF(self, weight):
         if self.isIDF:
+            self.query_idf = self.abstract_idf[:-1]
             return weight * self.abstract_idf[:-1]
+        else:
+            self.query_idf = [1 for i in range (len(self.vocabulary_abstract))]
         return weight
             
     def calculateWeight(self, token):
-        weight = self.calculateTF(token)
-        weight = self.calculateIDF(weight)
+        self.query_tf = self.calculateTF(token)
+        weight = self.calculateIDF(self.query_tf)
         return weight 
     
     def expand(self, token):
@@ -123,6 +128,12 @@ class IRSystem:
     
     def getExpansion(self):
         return self.expanded
+    
+    def getWeights(self):
+        return self.query_tf, self.query_idf
+    
+    def getVocab(self):
+        return self.vocabulary_abstract
 
     def similarity(self, weight_token):
         similarity_score = []
