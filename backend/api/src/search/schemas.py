@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 from enum import Enum
 
@@ -40,7 +41,7 @@ class SearchInverted(BaseModel):
     idf: list[list[float]]
 
 class SearchRequest(SearchBase):
-    pass
+     batch_relevance: Optional[list[int]] = None
 
 class SearchInvertRequest(SearchInvertBase):
     pass

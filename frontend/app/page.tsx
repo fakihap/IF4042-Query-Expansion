@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { getDocuments, getQueryPairs, getQuery, startSearch } from "./actions";
 import { useMainStore, Document } from "@/store/mainStore";
 import { useQuerySettingsStore } from "@/store/querySettingsStore";
@@ -99,6 +99,67 @@ export default function Home() {
     setCurrentWeight([res.result[0][2], res.result[0][3]])
     setCurrentVocabulary(res.result[0][4])
   }
+
+  const handleBatchSearch = async () => {
+    const res = await startSearch({
+      queries: queryBatch, // TODO: later deal with "from file" inputs
+      useStemming: useStemming,
+      useStopwordElim: useStopWordElim,
+      tfMode: "augmented", // TODO: change to enum
+      useIDF: useIDF, 
+      useNormalize: useNormalization,
+      numberExpansionWords: numberExpansionWords,
+      batchRelevance: relBatch
+    })
+    setCurrentQueryResult(res.result[0])
+    setExpansion(res.result[0][1])
+    setCurrentWeight([res.result[0][2], res.result[0][3]])
+    setCurrentVocabulary(res.result[0][4])
+  }
+
+  // read file
+  const [queryBatch, setQueryBatch] = useState<string[]>([]);
+  const [relBatch, setRelBatch] = useState<string[][]>([]);
+
+  const handleFileRead = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) 
+      return
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      if (!e.target)
+        return
+      
+      const content = e.target.result as string
+      // console.log(content)
+      const lineArray = content.split(/\r?\n/); // handles both \n and \r\n
+      console.log(lineArray)
+      let queryList: string[] = []
+      let relList: string[][] = []
+
+      lineArray.forEach((i) => {  
+        
+        const ctx = i.substring(i.indexOf(' ') + 1)
+        const idx = ctx.indexOf(' ')
+
+        if (i.startsWith('query')) {
+          queryList.push(ctx.substring(idx+1))
+        } else if (i.startsWith('rel')) {
+          relList.push([ctx.substring(0, idx), ctx.substring(idx+1)])
+        }
+      })
+3
+
+      // console.log(queryList, relList)
+
+      setQueryBatch(queryList)
+      setRelBatch(relList)
+    }
+
+    reader.readAsText(file)
+  };
   
   return (
     <div className={`grid ${openSidebar ? "grid-cols-[20rem_1fr]" : "grid-cols-[0_1fr]"} h-screen duration-300`}>
@@ -136,9 +197,9 @@ export default function Home() {
                       <Search />
                       Search
                     </Button> 
-                    <Button variant={"outline"}  className="px-4 py-2 hover:cursor-pointer rounded-xs">
-                      From File
-                    </Button> 
+                    <Button className="px-4 py-2 hover:cursor-pointer rounded-xs" asChild>
+                      <Input type="file" onChange={(e) => handleFileRead(e)} />
+                    </Button>
                   </span>
                 </section>
 
@@ -149,7 +210,11 @@ export default function Home() {
                       {/* <div className="text-gray-400">Showing results x from y documents</div> */}
                     </div>
                     <div className="flex flex-col">
-                      <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
+                      <Button variant={"secondary"} onClick={() => {
+                        console.log(relBatch, queryBatch)
+
+                        handleBatchSearch()
+                      }} className="px-8 py-2 hover:cursor-pointer rounded-xs">
                         Download Results
                       </Button> 
                       <Button variant={"outline"}  className="px-4 py-2 hover:cursor-pointer rounded-xs" disabled>
