@@ -19,7 +19,7 @@ class IRSystem:
         self.expander = GenerativeAdversarialNetwork(self.isStem, self.isEliminateStopWords)
 
         self.stemmer = PorterStemmer()
-        nltk.download('stopwords')
+        # nltk.download('stopwords')
         self.stopwords = set(stopwords.words('english'))
 
         base_path = os.path.dirname(os.path.abspath(__file__))
