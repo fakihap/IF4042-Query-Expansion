@@ -16,6 +16,9 @@ services:
     image: if4042-backend:latest
     volumes:
       - ./dataset:/app/dataset
+      - ./backend/api/core/gan:/app/api/core/gan
+      - ./backend/api/core/vocabulary:/app/api/core/vocabulary
+      - ./backend/api/core/weight:/app/api/core/weight
     env_file:
       - ./backend/.env
     ports:
