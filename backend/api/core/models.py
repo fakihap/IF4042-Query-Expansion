@@ -111,12 +111,15 @@ class IRSystem:
             
     def calculateIDF(self, weight):
         if self.isIDF:
+            self.query_idf = self.abstract_idf[:-1]
             return weight * self.abstract_idf[:-1]
+        else:
+            self.query_idf = [1 for i in range (len(self.vocabulary_abstract))]
         return weight
             
     def calculateWeight(self, token):
-        weight = self.calculateTF(token)
-        weight = self.calculateIDF(weight)
+        self.query_tf = self.calculateTF(token)
+        weight = self.calculateIDF(self.query_tf)
         return weight 
     
     def expand(self, token):
@@ -125,6 +128,12 @@ class IRSystem:
     
     def getExpansion(self):
         return self.expanded
+    
+    def getWeights(self):
+        return self.query_tf, self.query_idf
+    
+    def getVocab(self):
+        return self.vocabulary_abstract
 
     def similarity(self, weight_token):
         similarity_score = []

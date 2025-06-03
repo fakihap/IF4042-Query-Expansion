@@ -13,10 +13,12 @@ def load_generator_model():
 def generate_expansion(query: SearchRequest):
     model = IRSystem(query.useStemming, query.useStopwordElim, query.tfMode, query.useIDF, query.useNormalize, query.numberExpansionWords) # 10s
 
-    result = model.retrieve(query.queries[0]) # 8s
-    expanded = model.getExpansion() # 6s if all, infinitesmal else
+    result = model.retrieve(query.queries[0]) 
+    expanded = model.getExpansion()
+    tf, idf = model.getWeights() 
+    vocab = model.getVocab()
 
-    return [(result, expanded)]
+    return [(result, expanded, tf, idf, vocab)] 
 
 def return_inverted(document_id):
     model = IRSystem(False, False, 'natural', True, False, 0)
