@@ -40,8 +40,8 @@ export default function Home() {
   const [searchPrompt, setSearchPrompt] = useState<string>()
   const [documents, setDocuments] = useState<Document[]>([])
   const [expansion, setExpansion] = useState<string[]>([])
-  const [currentWeight, setCurrentWeight] = useState<number[][]>([])
-  const [currentVocabulary, setCurrentVocabulary] = useState<string[]>([])
+  const [currentWeight, setCurrentWeight] = useState<number[][][]>([])
+  const [currentVocabulary, setCurrentVocabulary] = useState<string[][]>([])
 
   // history
   useEffect(() => {
@@ -270,18 +270,41 @@ export default function Home() {
                           }
                       </TabsContent>
                       <TabsContent value="weight">
-                        <WeightTable data={currentWeight} vocab={currentVocabulary} />
+                        <Tabs defaultValue="title" asChild>
+                            <div>
+                            <div className="w-full flex items-center justify-center gap-3 h-[36px]">
+                              <TabsList>
+                                <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="title">Title</TabsTrigger>
+                                <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="author">Author</TabsTrigger>
+                                <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="abstract">Abstract</TabsTrigger>
+                              </TabsList>
+                            </div>
+                            <TabsContent value="title">
+                              {
+                                currentWeight.length > 0 && currentVocabulary.length > 0 &&
+                                <WeightTable data={[currentWeight[0][0], currentWeight[1][0]]} vocab={currentVocabulary[0]} />
+                              }
+                            </TabsContent>
+                            <TabsContent value="author">
+                              {
+                                currentWeight.length > 0 && currentVocabulary.length > 0 &&
+                                <WeightTable data={[currentWeight[0][1], currentWeight[1][1]]} vocab={currentVocabulary[1]} />
+                              }
+                            </TabsContent>
+                            <TabsContent value="abstract">
+                              {
+                                currentWeight.length > 0 && currentVocabulary.length > 0 &&
+                                <WeightTable data={[currentWeight[0][2], currentWeight[1][2]]} vocab={currentVocabulary[2]} />
+                              }
+                            </TabsContent>
+                            </div>
+                        </Tabs>
                       </TabsContent>
                     </div>
                   </Tabs>
-
-                  
-
-                  
                 </section>
               </section>
             </TabsContent>
-
             <TabsContent value="browse">
               <InvertedViewer/>
               
