@@ -11,62 +11,160 @@ import joblib
 from api.src.search.schemas import TermFrequencyMode
 
 class IRSystem:
-    def __init__(self, isStem, isEliminateStopWords, tfMode: TermFrequencyMode, isIDF, isNormalized, numberExpansion):
-        self.isStem = isStem
-        self.isEliminateStopWords = isEliminateStopWords
-        self.tfMode = tfMode
-        self.isIDF = isIDF
-        self.isNormalized = isNormalized
-        self.numberExpansion = numberExpansion
-        self.expander = GenerativeAdversarialNetwork(self.isStem, self.isEliminateStopWords)
+    def __init__(self):
+        self.isStem = None
+        self.isEliminateStopWords = None
+        self.tfMode = None
+        self.isIDF = None
+        self.isNormalized = None
+        self.numberExpansion = None
+        self.expanded = []
 
+        self.expander = GenerativeAdversarialNetwork(self.isStem, self.isEliminateStopWords)
         self.stemmer = PorterStemmer()
-        # nltk.download('stopwords')
         self.stopwords = set(stopwords.words('english'))
 
         base_path = os.path.dirname(os.path.abspath(__file__))
-        if self.isStem:
-            path = 'vocabulary/stemmed'
-        else:
-            path = 'vocabulary/raw'
 
-        if self.isEliminateStopWords:
-            with open(os.path.join(base_path, path, 'title.txt'), 'r') as file:
-                self.vocabulary_title = [line.strip() for line in file if line not in self.stopwords]
-            with open(os.path.join(base_path, path, 'author.txt'), 'r') as file:
-                self.vocabulary_author = [line.strip() for line in file if line not in self.stopwords]
-            with open(os.path.join(base_path, path, 'abstract.txt'), 'r') as file:
-                self.vocabulary_abstract = [line.strip() for line in file if line not in self.stopwords]
-        else:
-            with open(os.path.join(base_path, path, 'title.txt'), 'r') as file:
+        self.vocabulary = {}
+
+        self.vocabulary['complete'] = {}
+        for vocab in ['stemmed', 'raw']:
+            with open(os.path.join(base_path, 'vocabulary', vocab, 'title.txt'), 'r') as file:
                 self.vocabulary_title = [line.strip() for line in file if line]
-            with open(os.path.join(base_path, path, 'author.txt'), 'r') as file:
+            with open(os.path.join(base_path, 'vocabulary', vocab, 'author.txt'), 'r') as file:
                 self.vocabulary_author = [line.strip() for line in file if line]
-            with open(os.path.join(base_path, path, 'abstract.txt'), 'r') as file:
+            with open(os.path.join(base_path, 'vocabulary', vocab, 'abstract.txt'), 'r') as file:
                 self.vocabulary_abstract = [line.strip() for line in file if line]
+            self.vocabulary['complete'][vocab] = {
+                'title': self.vocabulary_title,
+                'author': self.vocabulary_author,
+                'abstract': self.vocabulary_abstract
+            }    
 
-        path = f'weight/tf/natural/raw/'
-        self.abstract_weight = []
-        self.author_weight = []
-        self.title_weight = []
+        self.vocabulary['eliminated'] = {}
+        for vocab in ['stemmed', 'raw']:
+            with open(os.path.join(base_path, 'vocabulary', vocab, 'title.txt'), 'r') as file:
+                self.vocabulary_title = [line.strip() for line in file if line not in self.stopwords]
+            with open(os.path.join(base_path, 'vocabulary', vocab, 'author.txt'), 'r') as file:
+                self.vocabulary_author = [line.strip() for line in file if line not in self.stopwords]
+            with open(os.path.join(base_path, 'vocabulary', vocab, 'abstract.txt'), 'r') as file:
+                self.vocabulary_abstract = [line.strip() for line in file if line not in self.stopwords]
+            self.vocabulary['eliminated'][vocab] = {
+                'title': self.vocabulary_title,
+                'author': self.vocabulary_author,
+                'abstract': self.vocabulary_abstract
+            }                  
 
         with open(os.path.join(base_path, 'cisi.json'), 'r') as file:
             self.document = json.load(file)
 
-        for i in range (1, 1461):
-            with open(os.path.join(base_path, path, str(i), 'abstract.txt'), 'r') as file:
-                self.abstract_weight.append([float(line.strip()) for line in file])
-            with open(os.path.join(base_path, path, str(i), 'author.txt'), 'r') as file:
-                self.author_weight.append([float(line.strip()) for line in file])
-            with open(os.path.join(base_path, path, str(i), 'title.txt'), 'r') as file:
-                self.title_weight.append([float(line.strip()) for line in file])
+        self.weight = {}
+        self.weight['complete'] = {}
+        self.weight['complete']['tf'] = {}
 
-        with open(os.path.join(base_path, 'weight/idf/raw/abstract.txt'), 'r') as file:
-            self.abstract_idf = [float(line.strip()) for line in file]
-        with open(os.path.join(base_path, 'weight/idf/raw/author.txt'), 'r') as file:
-            self.author_idf = [float(line.strip()) for line in file]
-        with open(os.path.join(base_path, 'weight/idf/raw/title.txt'), 'r') as file:
-            self.title_idf = [float(line.strip()) for line in file]
+        for tf in ['natural', 'augmented', 'logarithmic', 'binary']:
+            for vocab in ['stemmed', 'raw']:
+                path = f'weight/tf/{tf}/{vocab}/'
+                self.abstract_weight = []
+                self.author_weight = []
+                self.title_weight = []
+
+                for i in range (1, 1461):
+                    with open(os.path.join(base_path, path, str(i), 'abstract.txt'), 'r') as file:
+                        self.abstract_weight.append([float(line.strip()) for line in file])
+                    with open(os.path.join(base_path, path, str(i), 'author.txt'), 'r') as file:
+                        self.author_weight.append([float(line.strip()) for line in file])
+                    with open(os.path.join(base_path, path, str(i), 'title.txt'), 'r') as file:
+                        self.title_weight.append([float(line.strip()) for line in file])
+                
+                if vocab not in self.weight['complete']['tf']:
+                    self.weight['complete']['tf'][vocab] = {}
+                
+                self.weight['complete']['tf'][vocab][tf] = {
+                    'abstract': self.abstract_weight,
+                    'author': self.author_weight,
+                    'title': self.title_weight
+                }
+
+        self.weight['complete']['idf'] = {}
+        for vocab in ['stemmed', 'raw']:
+            with open(os.path.join(base_path, f'weight/idf/{vocab}/abstract.txt'), 'r') as file:
+                self.abstract_idf = [float(line.strip()) for line in file]
+            with open(os.path.join(base_path, f'weight/idf/{vocab}/author.txt'), 'r') as file:
+                self.author_idf = [float(line.strip()) for line in file]
+            with open(os.path.join(base_path, f'weight/idf/{vocab}/title.txt'), 'r') as file:
+                self.title_idf = [float(line.strip()) for line in file]
+            self.weight['complete']['idf'][vocab] = {
+                'abstract': self.abstract_idf,
+                'author': self.author_idf,
+                'title': self.title_idf
+            }
+
+        self.weight['eliminated'] = {}
+        self.weight['eliminated']['tf'] = {}
+        for tf in ['natural', 'augmented', 'logarithmic', 'binary']:
+            for vocab in ['stemmed', 'raw']:
+                self.title_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['title'], self.weight['complete']['tf'][vocab][tf]['title']) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['title']]
+                self.author_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['author'], self.weight['complete']['tf'][vocab][tf]['author']) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['author']]
+                self.abstract_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['abstract'], self.weight['complete']['tf'][vocab][tf]['abstract']) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['abstract']]
+                
+                if vocab not in self.weight['eliminated']['tf']:
+                    self.weight['eliminated']['tf'][vocab] = {}
+                
+                self.weight['eliminated']['tf'][vocab][tf] = {
+                    'abstract': self.abstract_weight,
+                    'author': self.author_weight,
+                    'title': self.title_weight
+                }
+
+        self.weight['eliminated']['idf'] = {}
+        for vocab in ['stemmed', 'raw']:
+            self.title_idf = [idf for word, idf in zip(self.vocabulary['complete'][vocab]['title'], self.weight['complete']['idf'][vocab]['title']) if word not in self.stopwords]
+            self.author_idf = [idf for word, idf in zip(self.vocabulary['complete'][vocab]['author'], self.weight['complete']['idf'][vocab]['author']) if word not in self.stopwords]
+            self.abstract_idf = [idf for word, idf in zip(self.vocabulary['complete'][vocab]['abstract'], self.weight['complete']['idf'][vocab]['abstract']) if word not in self.stopwords]
+            self.weight['eliminated']['idf'][vocab] = {
+                'abstract': self.abstract_idf,
+                'author': self.author_idf,
+                'title': self.title_idf
+            }
+
+    def setEnvironment(self, isStem, isEliminateStopWords, tfMode: TermFrequencyMode, isIDF, isNormalized, numberExpansion):
+        self.isStem = isStem
+        self.isEliminateStopWords = isEliminateStopWords
+        self.tfMode = tfMode.value
+        self.isIDF = isIDF
+        self.isNormalized = isNormalized
+        self.numberExpansion = numberExpansion
+        print("isEliminateStopWords", isEliminateStopWords)
+
+        self.vocabulary_title = self.vocabulary['eliminated' if isEliminateStopWords else 'complete']['stemmed' if isStem else 'raw']['title']
+        self.vocabulary_author = self.vocabulary['eliminated' if isEliminateStopWords else 'complete']['stemmed' if isStem else 'raw']['author']
+        self.vocabulary_abstract = self.vocabulary['eliminated' if isEliminateStopWords else 'complete']['stemmed' if isStem else 'raw']['abstract']
+
+        print("S")
+
+        if tfMode == TermFrequencyMode.No:
+            self.abstract_weight = np.array([[1 for i in range (len(self.vocabulary_abstract) + 1)] for _ in range(1460)])
+            self.author_weight = np.array([[1 for i in range (len(self.vocabulary_author) + 1)] for _ in range(1460)])
+            self.title_weight = np.array([[1 for i in range (len(self.vocabulary_title) + 1)] for _ in range(1460)])
+        else:
+            self.abstract_weight = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['tf']['stemmed' if isStem else 'raw'][self.tfMode]['abstract'])
+            self.author_weight = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['tf']['stemmed' if isStem else 'raw'][self.tfMode]['author'])
+            self.title_weight = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['tf']['stemmed' if isStem else 'raw'][self.tfMode]['title'])
+
+        print("D")
+
+        if self.isIDF:
+            self.abstract_idf = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['idf']['stemmed' if isStem else 'raw']['abstract'])
+            self.author_idf = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['idf']['stemmed' if isStem else 'raw']['author'])
+            self.title_idf = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['idf']['stemmed' if isStem else 'raw']['title'])
+        else:
+            self.abstract_idf = np.array([1 for i in range (len(self.vocabulary_abstract) + 1)])
+            self.author_idf = np.array([1 for i in range (len(self.vocabulary_author) + 1)])
+            self.title_idf = np.array([1 for i in range (len(self.vocabulary_title) + 1)])
+
+        print("E")
 
     def stem(self, text):
         if self.isStem:
@@ -84,38 +182,43 @@ class IRSystem:
         return list
     
     def calculateTF(self, tokens):
-        weight = np.array([0 for i in range (len(self.vocabulary_abstract))])
-        unique_token = set(tokens)
+        weights = []
+        for item in [self.vocabulary_title, self.vocabulary_author, self.vocabulary_abstract]:
+            weight = np.array([0.0 for i in range (len(item) + 1)],  dtype=float)
+            unique_token = set(tokens)
+            unknown_token = 0
 
-        for token in unique_token:
-            try:
-                idx = self.vocabulary_abstract.index(token)
-                weight[idx] = tokens.count(token)
-            except ValueError:
-                continue
-                        
-        max_list = np.max(weight)
-        match self.tfMode:
-            case 'natural':
-                weight = weight
-            case 'augmented':
-                weight = 0.5 + (0.5 * weight / max_list)
-            case 'logarithmic':
-                mask = weight > 0
-                weight[mask] = 1 + np.log2(weight[mask])
-            case 'binary':
-                weight = (weight > 0).astype(int)
-            case 'no':
-                weight = [1 for i in range (len(self.vocabulary_abstract))]
-        return weight
+            for token in unique_token:
+                try:
+                    idx = item.index(token)
+                    weight[idx] = tokens.count(token)
+                except ValueError:
+                    unknown_token += tokens.count(token)
+                    continue
+
+            weight[-1] = unknown_token 
+                            
+            max_list = np.max(weight)
+            match self.tfMode:
+                case 'natural':
+                    weight = weight
+                case 'augmented':
+                    weight = 0.5 + (0.5 * weight / max_list)
+                case 'logarithmic':
+                    mask = weight > 0
+                    weight[mask] = 1 + np.log2(weight[mask])
+                case 'binary':
+                    weight = (weight > 0).astype(int)
+                case 'no':
+                    weight = [1 for i in range (len(item) + 1)]
             
-    def calculateIDF(self, weight):
-        if self.isIDF:
-            self.query_idf = self.abstract_idf[:-1]
-            return weight * self.abstract_idf[:-1]
-        else:
-            self.query_idf = [1 for i in range (len(self.vocabulary_abstract))]
-        return weight
+            weights.append(weight)
+        return weights
+            
+    def calculateIDF(self, weights):
+        for i, item in enumerate([self.title_idf, self.author_idf, self.abstract_idf]):
+            weights[i] *= item
+        return weights
             
     def calculateWeight(self, token):
         self.query_tf = self.calculateTF(token)
@@ -130,33 +233,49 @@ class IRSystem:
         return self.expanded
     
     def getWeights(self):
-        return self.query_tf, self.query_idf
+        return self.query_tf, [self.title_idf, self.author_idf, self.abstract_idf]
     
     def getVocab(self):
-        return self.vocabulary_abstract
+        return [self.vocabulary_title, self.vocabulary_author, self.vocabulary_abstract]
 
     def similarity(self, weight_token):
         similarity_score = []
-        for i in range (len(self.abstract_weight)):
-            res = self.abstract_weight[i][:-1] * weight_token
-            if (self.isIDF):
-                res *= self.abstract_idf[:-1]
-            if (self.isNormalized):
-                token_magnitude = weight_token.magnitude()
-                res /= token_magnitude
-                res /= self.weight_document.magnitude
-            similarity_score.append({"document_id": i+1, "similarity": np.sum(res)})
 
-        similarity_score = sorted(similarity_score, key=lambda x: x["similarity"], reverse=True)
+        for i in range (len(self.document)):
+            res_title = self.title_weight[i] * weight_token[0]
+            res_author = self.author_weight[i] * weight_token[1]
+            res_abstract = self.abstract_weight[i] * weight_token[2]
+
+            res_title = res_title * self.title_idf
+            res_author = res_author * self.author_idf
+            res_abstract = res_abstract * self.abstract_idf
+
+            if (self.isNormalized):
+                title_magnitude = np.linalg.norm(self.title_weight[i]) * np.linalg.norm(weight_token[0])
+                author_magnitude = np.linalg.norm(self.author_weight[i]) * np.linalg.norm(weight_token[1])
+                abstract_magnitude = np.linalg.norm(self.abstract_weight[i] * np.linalg.norm(weight_token[2]))
+                
+                res_title /= title_magnitude if title_magnitude != 0 else 1
+                res_author /= author_magnitude if author_magnitude != 0 else 1
+                res_abstract /= abstract_magnitude if abstract_magnitude != 0 else 1
+
+            res = np.sum(res_title) + np.sum(res_author) + np.sum(res_abstract)
+            similarity_score.append({"document_id": i+1, "similarity": res})
+
+            similarity_score = sorted(similarity_score, key=lambda x: x["similarity"], reverse=True)
         return similarity_score
     
     def retrieve(self, query):
+        print("1")
         token = self.stem(query)
+        print("2")
         token = self.eliminateStopWords(token)
-        token = self.expand(token)
-
+        print("3")
+        # token = self.expand(token)
         weight = self.calculateWeight(token)
+        print("4")
         document_rank = self.similarity(weight)
+        print("5")
         return document_rank
     
     def retrieve_invert(self, document_id):
@@ -167,9 +286,9 @@ class IRSystem:
                 "title": doc['title'],
                 "author": doc['author'],
                 "abstract": doc['abstract'],
-                "vocab": [self.vocabulary_title, self.vocabulary_author, self.vocabulary_abstract],
-                "tf": [self.title_weight[document_id -1][:-1], self.author_weight[document_id -1][:-1], self.abstract_weight[document_id -1][:-1]],
-                "idf": [self.title_idf[:-1], self.author_idf[:-1], self.abstract_idf[:-1]]
+                "vocab": [self.vocabulary_title + ['<UNKNOWN>'], self.vocabulary_author + ['<UNKNOWN>'], self.vocabulary_abstract + ['<UNKNOWN>']],
+                "tf": [self.title_weight[document_id -1], self.author_weight[document_id -1], self.abstract_weight[document_id -1]],
+                "idf": [self.title_idf, self.author_idf, self.abstract_idf]
             }
         
         return {

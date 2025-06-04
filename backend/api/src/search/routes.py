@@ -35,7 +35,7 @@ async def start_inverted(
 ) -> SearchInvertResponse:
     
     try:
-        result = return_inverted(search_params.document_id)
+        result = return_inverted(search_params)
 
         return {
             "document_id": search_params.document_id,

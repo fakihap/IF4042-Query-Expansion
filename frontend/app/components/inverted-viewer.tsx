@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { Toaster } from "@/components/ui/sonner"
+import { toast } from "sonner"
 import {
   Table,
   TableBody,
@@ -23,7 +25,7 @@ import {
 } from "@/components/ui/pagination"
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
 import { searchInvertedFile } from "../actions";
-import { useQuerySettingsStore } from "@/store/querySettingsStore";
+import { useQuerySettingsStore, getWeightingSchemeKey } from "@/store/querySettingsStore";
 import PageButtons from "./pagination";
 
 const ITEMS_PER_PAGE = 5;
@@ -45,19 +47,22 @@ export default function InvertedViewer() {
 
     const handleSearch = async () => {
       if (docId) {
+          console.log(useStopWordElim)
           const res = await searchInvertedFile({
                 document_id: parseInt(docId),
                 useStemming: useStemming,
                 useStopwordElim: useStopWordElim,
-                tfMode: "augmented",
+                tfMode: getWeightingSchemeKey(weightingScheme),
                 useIDF: useIDF, 
                 useNormalize: useNormalization,
               })
           
           console.log(res)
           if (res.result.document_id != -1) {
+              toast(`Document ${res.result.document_id} is Found`)
               setCurrentDoc({"id": res.result.document_id, "title": res.result.title, "author": res.result.author, "abstract": res.result.abstract, "tf": res.result.tf, "idf":res.result.idf, "vocab":res.result.vocab});
           } else {
+              toast.error(`Document ${docId} is NOT Found`)
               setCurrentDoc({"id": -1, "title": "", "author": "", "abstract": "", "tf":[[]], "idf":[[]], "vocab": [[]]})
           }
       }
@@ -65,6 +70,7 @@ export default function InvertedViewer() {
 
     return (
         <div className="w-full">
+            <Toaster />
             <h2 className="text-2xl font-bold pb-2 mt-4">Browse Inverted File</h2>
               <section className="w-full flex gap-6 py-2">
                 <Input type="number" className="rounded-xs" value={docId} onChange={(e) => setDocId(e.target.value)} placeholder="Search Document ID" />
@@ -98,12 +104,6 @@ export default function InvertedViewer() {
                         <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="author">Author</TabsTrigger>
                         <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="abstract">Abstract</TabsTrigger>
                       </TabsList>
-                      <div className="flex 1/2">
-                        <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
-                          <Search />
-                        </Button> 
-                        <Input className="rounded-xs" placeholder="Search Vocabulary" />
-                      </div>
                     </section>
                   </div>
 
