@@ -14,6 +14,7 @@ import SearchSettings from "./components/search-settings";
 import DocumentList from "./components/document-list";
 import InvertedViewer from "./components/inverted-viewer";
 import WeightTable from "./components/weight-table";
+import DownloadButton from "./components/download-button";
 
 export default function Home() {
   const {
@@ -231,9 +232,7 @@ export default function Home() {
                       {/* <div className="text-gray-400">Showing results x from y documents</div> */}
                     </div>
                     <div className="flex flex-col">
-                      <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
-                        Download Results
-                      </Button> 
+                      <DownloadButton />
                       <span className="px-4 py-2 text-gray-400 font-semibold rounded-xs text-center">
                         MAP: {MAP.toFixed(4)}
                       </span> 
