@@ -15,6 +15,8 @@ import DocumentList from "./components/document-list";
 import InvertedViewer from "./components/inverted-viewer";
 import WeightTable from "./components/weight-table";
 import DownloadButton from "./components/download-button";
+import { Toaster } from "@/components/ui/sonner"
+import { toast } from "sonner"
 
 export default function Home() {
   const {
@@ -103,6 +105,7 @@ export default function Home() {
     setExpansion(res.result[0][1])
     setCurrentWeight([res.result[0][2], res.result[0][3]])
     setCurrentVocabulary(res.result[0][4])
+    toast(`Search Success`)
   }
 
   // read file
@@ -144,7 +147,6 @@ export default function Home() {
       })
 
       // console.log(queryList, relList)
-
       setQueryBatch(queryList)
       setRelBatch(relList)
       setSearchDisabled(true)
@@ -172,11 +174,11 @@ export default function Home() {
     let relCount = 0
     let totalAP = 0
 
-    relDocs.map((i) => {
-      const idx = currentQueryResult[0].findIndex(doc => doc.document_id == i)
-      relCount += 1
-
-      totalAP += relCount / (idx + 1)
+    currentQueryResult[0].map((item, idx) => {
+      if (item.document_id in relDocs) {
+        relCount += 1
+        totalAP += relCount / (idx + 1)
+      }
     })
 
     setMAP(totalAP / relCount)
@@ -185,6 +187,7 @@ export default function Home() {
   
   return (
     <div className={`grid ${openSidebar ? "grid-cols-[20rem_1fr]" : "grid-cols-[0_1fr]"} h-screen duration-300`}>
+      <Toaster />
       {/* sidebar */}
       <aside className={`${openSidebar ? "fixed top-0 left-0 h-full bg-sidebar px-8 py-12 transition-all duration-300 z-20 w-80 opacity-100" : "opacity-100 w-0 h-screen bg-sidebar px-8 py-12"}`}>
         <section className={`flex flex-col gap-8 ${openSidebar ? "" : "hidden"}`}>

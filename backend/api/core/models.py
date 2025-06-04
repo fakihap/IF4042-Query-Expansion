@@ -31,30 +31,30 @@ class IRSystem:
         self.vocabulary['complete'] = {}
         for vocab in ['stemmed', 'raw']:
             with open(os.path.join(base_path, 'vocabulary', vocab, 'title.txt'), 'r') as file:
-                self.vocabulary_title = [line.strip() for line in file if line]
+                self.vocabulary_title = [line.strip() for line in file]
             with open(os.path.join(base_path, 'vocabulary', vocab, 'author.txt'), 'r') as file:
-                self.vocabulary_author = [line.strip() for line in file if line]
+                self.vocabulary_author = [line.strip() for line in file]
             with open(os.path.join(base_path, 'vocabulary', vocab, 'abstract.txt'), 'r') as file:
-                self.vocabulary_abstract = [line.strip() for line in file if line]
+                self.vocabulary_abstract = [line.strip() for line in file]
             self.vocabulary['complete'][vocab] = {
                 'title': self.vocabulary_title,
                 'author': self.vocabulary_author,
                 'abstract': self.vocabulary_abstract
-            }    
+            }
 
         self.vocabulary['eliminated'] = {}
         for vocab in ['stemmed', 'raw']:
             with open(os.path.join(base_path, 'vocabulary', vocab, 'title.txt'), 'r') as file:
-                self.vocabulary_title = [line.strip() for line in file if line not in self.stopwords]
+                self.vocabulary_title = [line.strip() for line in file if line.strip() not in self.stopwords]
             with open(os.path.join(base_path, 'vocabulary', vocab, 'author.txt'), 'r') as file:
-                self.vocabulary_author = [line.strip() for line in file if line not in self.stopwords]
+                self.vocabulary_author = [line.strip() for line in file if line.strip() not in self.stopwords]
             with open(os.path.join(base_path, 'vocabulary', vocab, 'abstract.txt'), 'r') as file:
-                self.vocabulary_abstract = [line.strip() for line in file if line not in self.stopwords]
+                self.vocabulary_abstract = [line.strip() for line in file if line.strip() not in self.stopwords]
             self.vocabulary['eliminated'][vocab] = {
                 'title': self.vocabulary_title,
                 'author': self.vocabulary_author,
                 'abstract': self.vocabulary_abstract
-            }                  
+            }
 
         with open(os.path.join(base_path, 'cisi.json'), 'r') as file:
             self.document = json.load(file)
@@ -105,9 +105,9 @@ class IRSystem:
         self.weight['eliminated']['tf'] = {}
         for tf in ['natural', 'augmented', 'logarithmic', 'binary']:
             for vocab in ['stemmed', 'raw']:
-                self.title_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['title'], self.weight['complete']['tf'][vocab][tf]['title']) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['title']]
-                self.author_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['author'], self.weight['complete']['tf'][vocab][tf]['author']) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['author']]
-                self.abstract_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['abstract'], self.weight['complete']['tf'][vocab][tf]['abstract']) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['abstract']]
+                self.title_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['title'], weights) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['title']]
+                self.author_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['author'], weights) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['author']]
+                self.abstract_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['abstract'], weights) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['abstract']]
                 
                 if vocab not in self.weight['eliminated']['tf']:
                     self.weight['eliminated']['tf'][vocab] = {}
@@ -142,29 +142,24 @@ class IRSystem:
         self.vocabulary_author = self.vocabulary['eliminated' if isEliminateStopWords else 'complete']['stemmed' if isStem else 'raw']['author']
         self.vocabulary_abstract = self.vocabulary['eliminated' if isEliminateStopWords else 'complete']['stemmed' if isStem else 'raw']['abstract']
 
-        print("S")
-
         if tfMode == TermFrequencyMode.No:
-            self.abstract_weight = np.array([[1 for i in range (len(self.vocabulary_abstract) + 1)] for _ in range(1460)])
-            self.author_weight = np.array([[1 for i in range (len(self.vocabulary_author) + 1)] for _ in range(1460)])
-            self.title_weight = np.array([[1 for i in range (len(self.vocabulary_title) + 1)] for _ in range(1460)])
+            self.abstract_weight = np.array([[1.0 for i in range (len(self.vocabulary_abstract) + 1)] for _ in range(1460)], dtype=float)
+            self.author_weight = np.array([[1.0 for i in range (len(self.vocabulary_author) + 1)] for _ in range(1460)], dtype=float)
+            self.title_weight = np.array([[1.0 for i in range (len(self.vocabulary_title) + 1)] for _ in range(1460)], dtype=float)
         else:
-            self.abstract_weight = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['tf']['stemmed' if isStem else 'raw'][self.tfMode]['abstract'])
-            self.author_weight = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['tf']['stemmed' if isStem else 'raw'][self.tfMode]['author'])
-            self.title_weight = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['tf']['stemmed' if isStem else 'raw'][self.tfMode]['title'])
-
-        print("D")
+            self.abstract_weight = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['tf']['stemmed' if isStem else 'raw'][self.tfMode]['abstract'], dtype=float)
+            self.author_weight = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['tf']['stemmed' if isStem else 'raw'][self.tfMode]['author'], dtype=float)
+            self.title_weight = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['tf']['stemmed' if isStem else 'raw'][self.tfMode]['title'], dtype=float)
 
         if self.isIDF:
-            self.abstract_idf = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['idf']['stemmed' if isStem else 'raw']['abstract'])
-            self.author_idf = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['idf']['stemmed' if isStem else 'raw']['author'])
-            self.title_idf = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['idf']['stemmed' if isStem else 'raw']['title'])
+            self.abstract_idf = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['idf']['stemmed' if isStem else 'raw']['abstract'], dtype=float)
+            self.author_idf = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['idf']['stemmed' if isStem else 'raw']['author'], dtype=float)
+            self.title_idf = np.array(self.weight['eliminated' if isEliminateStopWords else 'complete']['idf']['stemmed' if isStem else 'raw']['title'], dtype=float)
         else:
-            self.abstract_idf = np.array([1 for i in range (len(self.vocabulary_abstract) + 1)])
-            self.author_idf = np.array([1 for i in range (len(self.vocabulary_author) + 1)])
-            self.title_idf = np.array([1 for i in range (len(self.vocabulary_title) + 1)])
+            self.abstract_idf = np.array([1.0 for i in range (len(self.vocabulary_abstract) + 1)], dtype=float)
+            self.author_idf = np.array([1.0 for i in range (len(self.vocabulary_author) + 1)], dtype=float)
+            self.title_idf = np.array([1.0 for i in range (len(self.vocabulary_title) + 1)], dtype=float)
 
-        print("E")
 
     def stem(self, text):
         if self.isStem:
@@ -208,9 +203,9 @@ class IRSystem:
                     mask = weight > 0
                     weight[mask] = 1 + np.log2(weight[mask])
                 case 'binary':
-                    weight = (weight > 0).astype(int)
+                    weight = (weight > 0).astype(float)
                 case 'no':
-                    weight = [1 for i in range (len(item) + 1)]
+                    weight = np.array([1.0 for i in range (len(item) + 1)], dtype=float)
             
             weights.append(weight)
         return weights
@@ -236,7 +231,7 @@ class IRSystem:
         return self.query_tf, [self.title_idf, self.author_idf, self.abstract_idf]
     
     def getVocab(self):
-        return [self.vocabulary_title, self.vocabulary_author, self.vocabulary_abstract]
+        return [self.vocabulary_title + ['<UNKNOWN>'], self.vocabulary_author + ['<UNKNOWN>'], self.vocabulary_abstract + ['<UNKNOWN>']]
 
     def similarity(self, weight_token):
         similarity_score = []
@@ -271,7 +266,7 @@ class IRSystem:
         print("2")
         token = self.eliminateStopWords(token)
         print("3")
-        # token = self.expand(token)
+        token = self.expand(token)
         weight = self.calculateWeight(token)
         print("4")
         document_rank = self.similarity(weight)
@@ -320,10 +315,13 @@ class GenerativeAdversarialNetwork:
         return vec
 
     def get_embedding(self, word):
-        idx = self.word_to_index[word]
-        one_hot_vec = self.one_hot(idx, len(self.vocab_words)).reshape(1, -1)
-        hidden = self.model.predict(one_hot_vec)
-        return hidden.flatten()
+        try:
+            idx = self.word_to_index[word]
+            one_hot_vec = self.one_hot(idx, len(self.vocab_words)).reshape(1, -1)
+            hidden = self.model.predict(one_hot_vec)
+            return hidden.flatten()
+        except KeyError:
+            return -1
 
     def discriminator(self, words, input_word, top_k=1):
         filtered = [(word, sim) for word, sim in input_word if word not in words]
@@ -331,7 +329,10 @@ class GenerativeAdversarialNetwork:
         return [word for word, _ in filtered_sorted[:top_k]]
 
     def generator(self, input_word, top_k=1):
-        input_emb = np.array(self.get_embedding(input_word)).reshape(1, -1)
+        embedding = self.get_embedding(input_word)
+        if isinstance(embedding, int) and embedding == -1:
+            return -1
+        input_emb = np.array(embedding).reshape(1, -1)
         sims = cosine_similarity(input_emb, self.vocab_embeddings)[0]  
         top_k_indices = np.argsort(sims)[-top_k:][::-1]      
         closest_words = [self.vocab_words[i] for i in top_k_indices]
@@ -341,7 +342,10 @@ class GenerativeAdversarialNetwork:
     def forward(self, words, number_expansion):
         generated = []
         for word in words:
-            generated += self.generator(word, number_expansion)
+            item = self.generator(word, number_expansion)
+            if item == -1:
+                continue
+            generated += item
         
         return self.discriminator(words, generated, number_expansion)
     

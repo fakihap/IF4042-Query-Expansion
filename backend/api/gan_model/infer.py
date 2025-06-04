@@ -1,11 +1,5 @@
-import sys
-import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from api.src.search.schemas import SearchRequest, SearchInvertRequest
-
-from core.models import IRSystem
+from api.core.models import IRSystem
 
 model = IRSystem()
 
@@ -22,8 +16,11 @@ def generate_expansion(query: SearchRequest):
     return [(result, expanded, tf, idf, vocab)] 
 
 def return_inverted(query: SearchInvertRequest):
-    print("STARTING INVERTED SEARCH")
+    # print("STARTING INVERTED SEARCH", query.useStemming, query.useStopwordElim, query.tfMode, query.useIDF, query.useNormalize)
     model.setEnvironment(query.useStemming, query.useStopwordElim, query.tfMode, query.useIDF, query.useNormalize, 0) 
     result = model.retrieve_invert(query.document_id)
+    # result = {}
     
     return result
+
+
