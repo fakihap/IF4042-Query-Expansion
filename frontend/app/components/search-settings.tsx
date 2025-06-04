@@ -5,7 +5,7 @@ import type { WeightingScheme } from "@/store/querySettingsStore";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { FlaskConical, SquareSlash, ScissorsLineDashed, Check, ChevronsUpDown } from "lucide-react"
+import { FlaskConical, SquareSlash, ScissorsLineDashed, Check, ChevronsUpDown, FlipHorizontal2, TriangleRight, ScanSearch } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input";
@@ -119,7 +119,7 @@ export default function SearchSettings() {
             </div>
             <div className="flex items-center justify-between w-full">
                 <Label className="font-light" htmlFor="use-stopwordelim">
-                    <SquareSlash />
+                    <FlipHorizontal2 />
                     Inverse Document 
                 </Label>
                 <Switch className="cursor-pointer" id="use-stopwordelim" checked={useIDF} onCheckedChange={(e) => setUseIDF(e)}/>
@@ -128,7 +128,7 @@ export default function SearchSettings() {
             <h4 className="text-l font-bold">Similarity Calculation</h4>
             <div className="flex items-center justify-between w-full">
                 <Label className="font-light" htmlFor="use-stopwordelim">
-                    <SquareSlash />
+                    <TriangleRight />
                     Normalization
                 </Label>
                 <Switch className="cursor-pointer" id="use-stopwordelim" checked={useNormalization} onCheckedChange={(e) => setUseNormalization(e)}/>
@@ -137,7 +137,7 @@ export default function SearchSettings() {
             <h4 className="text-l font-bold">Word Expansion</h4>
             <div className="flex items-center justify-between ">
                 <Label className="font-light" htmlFor="use-stopwordelim">
-                    <SquareSlash />
+                    <ScanSearch />
                     Number Words
                 </Label>
                 <div className="flex items-center justify-between w-1/2">

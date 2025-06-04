@@ -99,14 +99,29 @@ export default function Home() {
       useNormalize: useNormalization,
       numberExpansionWords: numberExpansionWords
     })
-    // .then(data => console.log('POST ', data, data.result))
-    // .then(data => setCurrentQueryResult(data)) ///////////////////////
+    
     setCurrentQueryResult(res.result[0])
     setExpansion(res.result[0][1])
     setCurrentWeight([res.result[0][2], res.result[0][3]])
     setCurrentVocabulary(res.result[0][4])
     toast(`Search Success`)
   }
+
+  // const handleSearchBatch = async () => {
+  //   const results = await queryBatch.map(async (q) => {
+  //     const res = await startSearch({
+  //       query: q,
+  //       useStemming: useStemming,
+  //       useStopwordElim: useStopWordElim,
+  //       tfMode: getWeightingSchemeKey(weightingScheme), // TODO: change to enum
+  //       useIDF: useIDF, 
+  //       useNormalize: useNormalization,
+  //       numberExpansionWords: numberExpansionWords
+  //     })
+
+  //     return res.result[0]
+  //   })
+  // }
 
   // read file
   const [queryBatch, setQueryBatch] = useState<string[]>([]);
@@ -150,17 +165,18 @@ export default function Home() {
       setQueryBatch(queryList)
       setRelBatch(relList)
       setSearchDisabled(true)
+
+      setBatchIndex(0)
     }
 
     reader.readAsText(file)
   };
 
   // read batch
-  const [batchIndex, setBatchIndex] = useState(0)
+  const [batchIndex, setBatchIndex] = useState(-1)
   useEffect(() => {
     // console.log(queryBatch[batchIndex])
     setSearchPrompt(queryBatch[batchIndex])
-
   }, [searchDisabled, batchIndex])
 
   // map
@@ -242,7 +258,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <QuerySettings data={expansion}/>
+                  <QuerySettings idx={batchIndex} setBatchIdx={setBatchIndex} data={expansion}/>
                   <Tabs defaultValue="document" asChild>
                     <div>
                       <div className="w-full flex items-center justify-end gap-3 h-[36px]">

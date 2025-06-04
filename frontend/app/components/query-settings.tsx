@@ -3,17 +3,22 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 
+import { Dispatch, SetStateAction } from "react";
+
 type QuerySettingsProps = {
-  data: string[];
+    idx: number;
+    setBatchIdx: Dispatch<SetStateAction<number>>;
+    data: string[];
 };
 
-export default function QuerySettings({data}: QuerySettingsProps) {
+export default function QuerySettings({idx, setBatchIdx, data}: QuerySettingsProps) {
     return (
         <div className="w-full">
             <nav aria-label="Pagination" className="isolate inline-flex -space-x-px rounded-md shadow-xs w-full pb-3">
                 <a
                 href="#"
                 className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                onClick={() => setBatchIdx(old => old - 1)}
                 >
                 <span className="sr-only">Previous</span>
                 <ArrowLeft aria-hidden="true" className="size-5" />
@@ -23,11 +28,13 @@ export default function QuerySettings({data}: QuerySettingsProps) {
                 aria-current="page"
                 className="relative z-10 w-full inline-flex items-center justify-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 text-center"
                 >
-                Query
+                Query {idx >= 0 && idx + 1}
                 </a>
                 <a
                 href="#"
                 className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                onClick={() => setBatchIdx(old => old + 1)}
+                
                 >
                 <span className="sr-only">Next</span>
                 <ArrowRight aria-hidden="true" className="size-5" />
