@@ -11,7 +11,7 @@ class TermFrequencyMode(Enum):
     No = 'no'
 
 class SearchBase(BaseModel):
-    queries: list[str]
+    query: str
     useStemming: bool
     useStopwordElim: bool
     tfMode: TermFrequencyMode
@@ -41,8 +41,7 @@ class SearchInverted(BaseModel):
     idf: list[list[float]]
 
 class SearchRequest(SearchBase):
-     batch_relevance: Optional[list[int]] = None
-
+    pass
 class SearchInvertRequest(SearchInvertBase):
     pass
 

@@ -15,7 +15,7 @@ async def start_search(
         rank_result = generate_expansion(search_params) # NOTE: for now, its a batch process
 
         return {
-            "queries": search_params.queries,
+            "query": search_params.query,
             "useStemming": search_params.useStemming,
             "useStopwordElim": search_params.useStopwordElim,
             "tfMode": search_params.tfMode,

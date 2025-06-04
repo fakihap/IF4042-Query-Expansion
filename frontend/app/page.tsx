@@ -83,8 +83,12 @@ export default function Home() {
   }, [])
 
   const handleStartSearch = async () => {
+    if (!searchPrompt) {
+      return
+    }
+
     const res = await startSearch({
-      queries: [searchPrompt ?? ''], // TODO: later deal with "from file" inputs
+      query: searchPrompt, // TODO: later deal with "from file" inputs
       useStemming: useStemming,
       useStopwordElim: useStopWordElim,
       tfMode: "augmented", // TODO: change to enum
@@ -100,27 +104,10 @@ export default function Home() {
     setCurrentVocabulary(res.result[0][4])
   }
 
-  const handleBatchSearch = async () => {
-    const res = await startSearch({
-      queries: queryBatch, // TODO: later deal with "from file" inputs
-      useStemming: useStemming,
-      useStopwordElim: useStopWordElim,
-      tfMode: "augmented", // TODO: change to enum
-      useIDF: useIDF, 
-      useNormalize: useNormalization,
-      numberExpansionWords: numberExpansionWords,
-      batchRelevance: relBatch
-    })
-    setCurrentQueryResult(res.result[0])
-    setExpansion(res.result[0][1])
-    setCurrentWeight([res.result[0][2], res.result[0][3]])
-    setCurrentVocabulary(res.result[0][4])
-  }
-
   // read file
   const [queryBatch, setQueryBatch] = useState<string[]>([]);
   const [relBatch, setRelBatch] = useState<string[][]>([]);
-
+  const [searchDisabled, setSearchDisabled] = useState(false)
   const handleFileRead = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) 
@@ -134,8 +121,8 @@ export default function Home() {
       
       const content = e.target.result as string
       // console.log(content)
-      const lineArray = content.split(/\r?\n/); // handles both \n and \r\n
-      console.log(lineArray)
+      const lineArray = content.split(/\r?\n/)
+
       let queryList: string[] = []
       let relList: string[][] = []
 
@@ -150,16 +137,24 @@ export default function Home() {
           relList.push([ctx.substring(0, idx), ctx.substring(idx+1)])
         }
       })
-3
 
       // console.log(queryList, relList)
 
       setQueryBatch(queryList)
       setRelBatch(relList)
+      setSearchDisabled(true)
     }
 
     reader.readAsText(file)
   };
+
+  // read batch
+  const [batchIndex, setBatchIndex] = useState(0)
+  useEffect(() => {
+    // console.log(queryBatch[batchIndex])
+    setSearchPrompt(queryBatch[batchIndex])
+
+  }, [searchDisabled, batchIndex])
   
   return (
     <div className={`grid ${openSidebar ? "grid-cols-[20rem_1fr]" : "grid-cols-[0_1fr]"} h-screen duration-300`}>
@@ -191,7 +186,7 @@ export default function Home() {
             <TabsContent value="search">
               <section className="flex items-center justify-center flex-col w-full mt-8 gap-4 overflow-x-hidden">
                 <section className="w-full flex gap-6 py-2">
-                  <Input className="rounded-xs" placeholder="Search Document" onChange={(e) => setSearchPrompt(e.target.value)}/>
+                  <Input disabled={searchDisabled} className="rounded-xs" placeholder="Search Document" onChange={(e) => setSearchPrompt(e.target.value)}/>
                   <span className="flex gap-2">
                     <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs" onClick={handleStartSearch}>
                       <Search />
@@ -210,11 +205,7 @@ export default function Home() {
                       {/* <div className="text-gray-400">Showing results x from y documents</div> */}
                     </div>
                     <div className="flex flex-col">
-                      <Button variant={"secondary"} onClick={() => {
-                        console.log(relBatch, queryBatch)
-
-                        handleBatchSearch()
-                      }} className="px-8 py-2 hover:cursor-pointer rounded-xs">
+                      <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
                         Download Results
                       </Button> 
                       <Button variant={"outline"}  className="px-4 py-2 hover:cursor-pointer rounded-xs" disabled>

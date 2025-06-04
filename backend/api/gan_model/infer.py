@@ -13,7 +13,7 @@ def load_generator_model():
 def generate_expansion(query: SearchRequest):
     model = IRSystem(query.useStemming, query.useStopwordElim, query.tfMode, query.useIDF, query.useNormalize, query.numberExpansionWords) # 10s
 
-    result = model.retrieve(query.queries[0]) 
+    result = model.retrieve(query.query) 
     expanded = model.getExpansion()
     tf, idf = model.getWeights() 
     vocab = model.getVocab()

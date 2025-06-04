@@ -11,21 +11,20 @@ export async function getDocuments() {
     return await res.json();
 }
 
-export async function startSearch({queries, useStemming, useStopwordElim, tfMode, useIDF, useNormalize, numberExpansionWords, batchRelevance}: {
-    queries: string[],
+export async function startSearch({query, useStemming, useStopwordElim, tfMode, useIDF, useNormalize, numberExpansionWords}: {
+    query: string,
     useStemming: boolean,
     useStopwordElim: boolean,
     tfMode: string, // TODO: change to enum
     useIDF: boolean, 
     useNormalize: boolean,
     numberExpansionWords: number,
-    batchRelevance?: string[][]
 }) {
     const res = await fetch("http://localhost:8000/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            queries: queries,
+            query: query,
             useStemming: useStemming,
             useStopwordElim: useStopwordElim,
             tfMode: tfMode,
