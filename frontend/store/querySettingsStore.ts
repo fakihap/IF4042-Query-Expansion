@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 export const WeightingSchemes = {
-  log: "Logarithmic",
+  logarithmic: "Logarithmic",
   binary: "Binary",
   augmented: "Augmented",
   natural: "Natural",
@@ -38,3 +38,14 @@ export const useQuerySettingsStore = create<QuerySettingsState>((set) => ({
   setUseNormalization: (value) => set({ useNormalization: value }),
   setNumberExpansionWords: (value) => set({ numberExpansionWords: value})
 }))
+
+
+
+type WeightingSchemeKey = keyof typeof WeightingSchemes;
+type WeightingSchemeLabel = typeof WeightingSchemes[WeightingSchemeKey];
+
+export function getWeightingSchemeKey(label: WeightingSchemeLabel): WeightingSchemeKey {
+  const entries = Object.entries(WeightingSchemes) as [WeightingSchemeKey, WeightingSchemeLabel][];
+  const found = entries.find(([_, v]) => v === label);
+  return found![0]; // NOTE: i forced this to exist
+}

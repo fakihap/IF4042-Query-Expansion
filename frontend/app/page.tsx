@@ -3,7 +3,7 @@
 import { useState, useEffect, ChangeEvent } from "react";
 import { getDocuments, getQueryPairs, getQuery, startSearch } from "./actions";
 import { useMainStore, Document } from "@/store/mainStore";
-import { useQuerySettingsStore } from "@/store/querySettingsStore";
+import { useQuerySettingsStore, getWeightingSchemeKey } from "@/store/querySettingsStore";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
 import QuerySettings from "./components/query-settings";
@@ -91,7 +91,7 @@ export default function Home() {
       query: searchPrompt, // TODO: later deal with "from file" inputs
       useStemming: useStemming,
       useStopwordElim: useStopWordElim,
-      tfMode: "augmented", // TODO: change to enum
+      tfMode: getWeightingSchemeKey(weightingScheme), // TODO: change to enum
       useIDF: useIDF, 
       useNormalize: useNormalization,
       numberExpansionWords: numberExpansionWords
