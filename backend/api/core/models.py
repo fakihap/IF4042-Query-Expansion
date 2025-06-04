@@ -7,6 +7,7 @@ import re
 import os
 from sklearn.metrics.pairwise import cosine_similarity
 import joblib
+import copy
 
 from api.src.search.schemas import TermFrequencyMode
 
@@ -105,24 +106,24 @@ class IRSystem:
         self.weight['eliminated']['tf'] = {}
         for tf in ['natural', 'augmented', 'logarithmic', 'binary']:
             for vocab in ['stemmed', 'raw']:
-                self.title_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['title'], weights) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['title']]
-                self.author_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['author'], weights) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['author']]
-                self.abstract_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['abstract'], weights) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['abstract']]
+                self.title_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['title']  + ['<UNKNOWN>'], weights) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['title']]
+                self.author_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['author'] +  ['<UNKNOWN>'], weights) if word not in self.stopwords]for weights in self.weight['complete']['tf'][vocab][tf]['author']]
+                self.abstract_weight = [[weight for word, weight in zip(self.vocabulary['complete'][vocab]['abstract'] + ['<UNKNOWN>'], weights) if word not in self.stopwords] for weights in self.weight['complete']['tf'][vocab][tf]['abstract']]
                 
                 if vocab not in self.weight['eliminated']['tf']:
                     self.weight['eliminated']['tf'][vocab] = {}
                 
                 self.weight['eliminated']['tf'][vocab][tf] = {
-                    'abstract': self.abstract_weight,
+                    'abstract': self.abstract_weight ,
                     'author': self.author_weight,
                     'title': self.title_weight
                 }
 
         self.weight['eliminated']['idf'] = {}
         for vocab in ['stemmed', 'raw']:
-            self.title_idf = [idf for word, idf in zip(self.vocabulary['complete'][vocab]['title'], self.weight['complete']['idf'][vocab]['title']) if word not in self.stopwords]
-            self.author_idf = [idf for word, idf in zip(self.vocabulary['complete'][vocab]['author'], self.weight['complete']['idf'][vocab]['author']) if word not in self.stopwords]
-            self.abstract_idf = [idf for word, idf in zip(self.vocabulary['complete'][vocab]['abstract'], self.weight['complete']['idf'][vocab]['abstract']) if word not in self.stopwords]
+            self.title_idf = [idf for word, idf in zip(self.vocabulary['complete'][vocab]['title'] + ['<UNKNOWN>'], self.weight['complete']['idf'][vocab]['title']) if word not in self.stopwords]
+            self.author_idf = [idf for word, idf in zip(self.vocabulary['complete'][vocab]['author'] + ['<UNKNOWN>'], self.weight['complete']['idf'][vocab]['author']) if word not in self.stopwords]
+            self.abstract_idf = [idf for word, idf in zip(self.vocabulary['complete'][vocab]['abstract']  + ['<UNKNOWN>'], self.weight['complete']['idf'][vocab]['abstract']) if word not in self.stopwords]
             self.weight['eliminated']['idf'][vocab] = {
                 'abstract': self.abstract_idf,
                 'author': self.author_idf,
@@ -198,7 +199,7 @@ class IRSystem:
                 case 'natural':
                     weight = weight
                 case 'augmented':
-                    weight = 0.5 + (0.5 * weight / max_list)
+                    weight[weight > 0] = 0.5 + (0.5 * weight[weight > 0] / max_list)
                 case 'logarithmic':
                     mask = weight > 0
                     weight[mask] = 1 + np.log2(weight[mask])
@@ -216,8 +217,9 @@ class IRSystem:
         return weights
             
     def calculateWeight(self, token):
-        self.query_tf = self.calculateTF(token)
-        weight = self.calculateIDF(self.query_tf)
+        res = self.calculateTF(token)
+        self.query_tf = copy.deepcopy(res)
+        weight = self.calculateIDF(res)
         return weight 
     
     def expand(self, token):
