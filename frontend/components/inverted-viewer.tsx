@@ -22,7 +22,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
-import { searchInvertedFile } from "../actions";
+import { searchInvertedFile } from "../app/actions";
 import { useQuerySettingsStore } from "@/store/querySettingsStore";
 import PageButtons from "./pagination";
 
