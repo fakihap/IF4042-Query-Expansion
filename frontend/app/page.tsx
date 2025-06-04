@@ -106,7 +106,7 @@ export default function Home() {
 
   // read file
   const [queryBatch, setQueryBatch] = useState<string[]>([]);
-  const [relBatch, setRelBatch] = useState<string[][]>([]);
+  const [relBatch, setRelBatch] = useState<{[key: number]: number[]}>();
   const [searchDisabled, setSearchDisabled] = useState(false)
   const handleFileRead = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -124,7 +124,7 @@ export default function Home() {
       const lineArray = content.split(/\r?\n/)
 
       let queryList: string[] = []
-      let relList: string[][] = []
+      let relList: {[key: number]: number[]} = {}
 
       lineArray.forEach((i) => {  
         
@@ -134,7 +134,11 @@ export default function Home() {
         if (i.startsWith('query')) {
           queryList.push(ctx.substring(idx+1))
         } else if (i.startsWith('rel')) {
-          relList.push([ctx.substring(0, idx), ctx.substring(idx+1)])
+          if (!relList[parseInt(ctx.substring(0, idx))]) {
+            relList[parseInt(ctx.substring(0, idx))] = []
+          }
+
+          relList[parseInt(ctx.substring(0, idx))].push(parseInt(ctx.substring(idx+1)))
         }
       })
 
@@ -155,6 +159,28 @@ export default function Home() {
     setSearchPrompt(queryBatch[batchIndex])
 
   }, [searchDisabled, batchIndex])
+
+  // map
+  const [MAP, setMAP] = useState(0)
+  useEffect(() => {
+    if (!relBatch) { // not a batch
+      return
+    }
+
+    const relDocs = relBatch[batchIndex + 1]
+    let relCount = 0
+    let totalAP = 0
+
+    relDocs.map((i) => {
+      const idx = currentQueryResult[0].findIndex(doc => doc.document_id == i)
+      relCount += 1
+
+      totalAP += relCount / (idx + 1)
+    })
+
+    setMAP(totalAP / relCount)
+
+  }, [currentQueryResult])
   
   return (
     <div className={`grid ${openSidebar ? "grid-cols-[20rem_1fr]" : "grid-cols-[0_1fr]"} h-screen duration-300`}>
@@ -208,9 +234,9 @@ export default function Home() {
                       <Button variant={"secondary"} className="px-8 py-2 hover:cursor-pointer rounded-xs">
                         Download Results
                       </Button> 
-                      <Button variant={"outline"}  className="px-4 py-2 hover:cursor-pointer rounded-xs" disabled>
-                        MAP: 99.99
-                      </Button> 
+                      <span className="px-4 py-2 text-gray-400 font-semibold rounded-xs text-center">
+                        MAP: {MAP.toFixed(4)}
+                      </span> 
                     </div>
                   </div>
 

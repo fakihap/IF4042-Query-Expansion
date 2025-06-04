@@ -30,7 +30,7 @@ export const useQuerySettingsStore = create<QuerySettingsState>((set) => ({
   weightingScheme: "Logarithmic",
   useIDF: false,
   useNormalization: false,
-  numberExpansionWords: -1,
+  numberExpansionWords: 4,
   setUseStemming: (value) => set({ useStemming: value }),
   setStopWordElim: (value) => set({ useStopWordElim: value }),
   setWeightingScheme: (scheme) => set({ weightingScheme: scheme }),
