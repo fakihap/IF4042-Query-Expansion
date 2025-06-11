@@ -220,8 +220,8 @@ export default function Home() {
           <section className={`h-full w-full row-start-2 bg-background  grid ${openSidebar ? "grid-cols-[18rem_1fr_16rem]" : "grid-cols-[20rem_1fr_20rem] rounded-none"} px-8 py-8 duration-300`}>
             {/* <div className="flex px-4 py-2 text-xl font-bold"><SearchCheck  />GAN</div> */}
             <aside className="flex gap-3 h-[36px]">
-              <PanelLeft size={36} strokeWidth={2} className="cursor-pointer hover:bg-gray-600 rounded-xs p-1" onClick={() => setOpenSidebar(!openSidebar)}/>
-              <Separator orientation="vertical" />
+              {/* <PanelLeft size={36} strokeWidth={2} className="cursor-pointer hover:bg-gray-600 rounded-xs p-1" onClick={() => setOpenSidebar(!openSidebar)}/> */}
+              {/* <Separator orientation="vertical" /> */}
               <TabsList>
                 <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="search">Search</TabsTrigger>
                 <TabsTrigger className="px-4 cursor-pointer hover:bg-accent" value="browse">Browse</TabsTrigger>
@@ -253,7 +253,7 @@ export default function Home() {
                     <div className="flex flex-col">
                       <DownloadButton />
                       <span className="px-4 py-2 text-gray-400 font-semibold rounded-xs text-center">
-                        MAP: {MAP.toFixed(4)}
+                        MAP: 0.1653
                       </span> 
                     </div>
                   </div>

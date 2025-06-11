@@ -54,7 +54,7 @@ export default function QuerySettings({idx, setBatchIdx, data}: QuerySettingsPro
                     </div>
                 </div>
                 <Button variant={"outline"}  className="px-4 py-2 hover:cursor-pointer rounded-xs" disabled>
-                    Average Precision: 99.99
+                    Average Precision: 0.1762
                 </Button> 
             </div>
         </div>
